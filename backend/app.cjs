@@ -19,15 +19,16 @@ require('./models/Team');
 require('./models/Incident');     
 
 const app = express();
+app.use(cors());
 
 // Kết nối DB (Sau khi load .env và models)
 connectDB();
 
 // Middleware
-app.use(cors());      // Cho phép Frontend gọi
-app.use(morgan('dev')); // Log request ra console
-app.use(express.json()); // Đọc body dạng JSON
-app.use(express.urlencoded({ extended: false }));
+//app.use(cors());      // Cho phép Frontend gọi
+//app.use(morgan('dev')); // Log request ra console
+//app.use(express.json()); // Đọc body dạng JSON
+//app.use(express.urlencoded({ extended: false }));
 
 
 // Đây là API Lộc đang làm (đã sửa)
@@ -36,7 +37,7 @@ app.use('/api/auth', require('./routes/auth'));
 // TODO (Lộc): sẽ thêm các API routes mới ở đây khi code
 // app.use('/api/incidents', require('./routes/incidentRoutes'));
 // app.use('/api/teams', require('./routes/teamRoutes'));
-
+app.use('/api/incidents', require('./routes/incidentRoutes'));
 
 // Error Handler (Giữ nguyên của Lộc, rất tốt)
 app.use((err, req, res, next) => {
