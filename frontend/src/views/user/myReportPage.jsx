@@ -9,6 +9,7 @@ import {
   Pagination
 } from "@mui/material";
 import { gridSpacing } from "store/constant";
+import RecentReportsCard from "./card/RecentReportsCard";
 
 export default function MyReportsPage() {
   const [isLoading, setLoading] = useState(true);
@@ -106,77 +107,7 @@ export default function MyReportsPage() {
       </Grid>
 
       {/* REPORT TABLE */}
-      <Grid item xs={12}>
-        <Card
-          sx={{
-            p: 3,
-            borderRadius: 3,
-            boxShadow: "0 4px 20px rgba(0,0,0,0.04)"
-          }}
-        >
-          {/* TABLE HEADER */}
-          <Grid
-            container
-            sx={{
-              fontWeight: 700,
-              color: "#777C6D",
-              pb: 1,
-              borderBottom: "2px solid #E0E0E0"
-            }}
-          >
-            <Grid item xs={2}>ID</Grid>
-            <Grid item xs={3}>Category</Grid>
-            <Grid item xs={2}>Location</Grid>
-            <Grid item xs={2}>Date</Grid>
-            <Grid item xs={2}>Status</Grid>
-            <Grid item xs={1}>Action</Grid>
-          </Grid>
-
-          {/* TABLE ROWS */}
-          {reports.map((r, idx) => (
-            <Grid
-              key={idx}
-              container
-              sx={{
-                py: 2,
-                borderBottom: "1px solid #EEE",
-                alignItems: "center"
-              }}
-            >
-              <Grid item xs={2}>{r.id}</Grid>
-              <Grid item xs={3}>{r.category}</Grid>
-              <Grid item xs={2}>{r.location}</Grid>
-              <Grid item xs={2}>{r.date}</Grid>
-              <Grid item xs={2}>{StatusChip(r.status)}</Grid>
-
-              <Grid item xs={1}>
-                {r.status === "pending" ? (
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => (window.location.href = `/user/edit/${r.id}`)}
-                  >
-                    Edit
-                  </Button>
-                ) : (
-                  <Button
-                    variant="text"
-                    size="small"
-                    onClick={() => (window.location.href = `/user/view/${r.id}`)}
-                  >
-                    View
-                  </Button>
-                )}
-              </Grid>
-            </Grid>
-          ))}
-
-          {/* PAGINATION */}
-          <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-            <Pagination count={5} variant="outlined" shape="rounded" />
-          </Box>
-        </Card>
-      </Grid>
+      <RecentReportsCard reports={reports} />
     </Grid>
   );
 }

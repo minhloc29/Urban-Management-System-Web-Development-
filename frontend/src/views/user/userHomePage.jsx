@@ -1,163 +1,154 @@
 import React from "react";
-import { Box, Grid, Card, Typography, Button, CardContent } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Card,
+  Typography,
+  Button,
+  Avatar,
+} from "@mui/material";
+
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import RecentReportsCard from "./card/RecentReportsCard";
+import UserIntroCard from "./card/UserIntroCard";
+import UserProfileCard from "./card/UserProfileCard";
 
 export default function UserHomePage() {
+
+  const sampleReports = [
+    { id: 101, category: "Ổ Gà", location: "500 Ngô Quyền", status: "Pending" },
+    { id: 102, category: "Ổ chuột", location: "361 Ngô Quyền", status: "Pending" },
+    { id: 103, category: "Ổ Gà", location: "361 Ngô Quyền", status: "Pending" },
+  ];
+
+  const avatarSrc = "frontend/src/assets/city_night.jpg"; // <-- CHANGE TO YOUR URL
+
   return (
-    <Box sx={{ p: 3 }}>
-      {/* HEADER */}
+    <Box
+      sx={{
+        p: 4,
+        minHeight: "100vh",
+        background: "radial-gradient(circle at 20% 20%, #1a1f40 0%, #0c0f26 70%)",
+        color: "white",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* FLOATING BG HALOS */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, #2E7D32, #4CAF50)",
-          color: "white",
-          p: 4,
-          borderRadius: 3,
-          mb: 4,
+          position: "absolute",
+          width: 350,
+          height: 350,
+          borderRadius: "50%",
+          background: "rgba(56,189,248,0.15)",
+          filter: "blur(120px)",
+          top: 60,
+          left: -80,
+        }}
+      />
+      <Box
+        sx={{
+          position: "absolute",
+          width: 300,
+          height: 300,
+          borderRadius: "50%",
+          background: "rgba(129,140,248,0.18)",
+          filter: "blur(140px)",
+          bottom: 80,
+          right: -40,
+        }}
+      />
+
+      {/* ===================== HERO SECTION ===================== */}
+      <Grid container
+        sx={{
+          justifyContent: "space-around"
         }}
       >
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          Welcome back, LocNg!
-        </Typography>
-        <Typography variant="subtitle1" sx={{ mt: 1 }}>
-          Keeping your city clean starts with you. What would you like to do today?
-        </Typography>
-
-        <Box sx={{ mt: 3, display: "flex", gap: 2, flexWrap: "wrap" }}>
-          <Button
-            variant="contained"
-            color="inherit"
-            sx={{ color: "#2E7D32", fontWeight: 600 }}
-            startIcon={<ReportProblemIcon />}
-            href="/report-problem"
-          >
-            Report a Problem
-          </Button>
-
-          <Button
-            variant="outlined"
-            sx={{ borderColor: "white", color: "white" }}
-            startIcon={<ListAltIcon />}
-            href="/my-reports"
-          >
-            Track My Reports
-          </Button>
-
-          <Button
-            variant="outlined"
-            sx={{ borderColor: "white", color: "white" }}
-            startIcon={<AccessTimeIcon />}
-            href="/history"
-          >
-            View History
-          </Button>
-        </Box>
-      </Box>
-
-      {/* ACTION CARDS (FPT AI Factory style) */}
-      <Grid container spacing={3}>
-        {/* Card 1 */}
-        <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              cursor: "pointer",
-              transition: "0.2s",
-              "&:hover": { transform: "translateY(-5px)", boxShadow: 6 },
-            }}
-            onClick={() => (window.location.href = "/report-problem")}
-          >
-            <ReportProblemIcon sx={{ fontSize: 40, color: "#E65100" }} />
-            <Typography variant="h6" sx={{ mt: 2, fontWeight: 700 }}>
-              Report an Issue
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: "gray" }}>
-              Submit a new report with images, description and location.
-            </Typography>
-          </Card>
+        {/* LEFT: TEXT */}
+        <Grid size={6}>
+        <UserIntroCard username="LocNg"/>
         </Grid>
-
-        {/* Card 2 */}
-        <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              cursor: "pointer",
-              transition: "0.2s",
-              "&:hover": { transform: "translateY(-5px)", boxShadow: 6 },
-            }}
-            onClick={() => (window.location.href = "/my-reports")}
-          >
-            <ListAltIcon sx={{ fontSize: 40, color: "#1565C0" }} />
-            <Typography variant="h6" sx={{ mt: 2, fontWeight: 700 }}>
-              Track My Reports
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: "gray" }}>
-              Monitor the status of your submitted problems.
-            </Typography>
-          </Card>
-        </Grid>
-
-        {/* Card 3 */}
-        <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              p: 3,
-              borderRadius: 3,
-              cursor: "pointer",
-              transition: "0.2s",
-              "&:hover": { transform: "translateY(-5px)", boxShadow: 6 },
-            }}
-            onClick={() => (window.location.href = "/history")}
-          >
-            <AccessTimeIcon sx={{ fontSize: 40, color: "#6A1B9A" }} />
-            <Typography variant="h6" sx={{ mt: 2, fontWeight: 700 }}>
-              View History
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: "gray" }}>
-              Browse your past resolved reports.
-            </Typography>
-          </Card>
+        {/* RIGHT: AVATAR PANEL */}
+        <Grid size="auto">
+        <UserProfileCard avatarSrc={""}/>
         </Grid>
       </Grid>
 
-      {/* RECENT REPORTS */}
-      <Card sx={{ p: 3, mt: 4, borderRadius: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-          Recent Reports
-        </Typography>
+      {/* ===================== SHORTCUT FEATURE CARDS ===================== */}
+      <Grid container spacing={3} sx={{ mt: 5, justifyContent: "space-around" }}>
+        <FeatureCard
+          icon={<ReportProblemIcon sx={{ fontSize: 42 }} />}
+          title="Report an Issue"
+          desc="Submit a report instantly with images and location."
+          color="#fca5a5"
+          href="/report-problem"
+        />
+        <FeatureCard
+          icon={<ListAltIcon sx={{ fontSize: 42 }} />}
+          title="Track My Reports"
+          desc="Follow your submitted issues in real time."
+          color="#93c5fd"
+          href="/my-reports"
+        />
+        <FeatureCard
+          icon={<AccessTimeIcon sx={{ fontSize: 42 }} />}
+          title="View History"
+          desc="Review all resolved issues in one place."
+          color="#c4b5fd"
+          href="/history"
+        />
+      </Grid>
 
-        <Grid container sx={{ p: 1, fontWeight: 600, color: "gray" }}>
-          <Grid item xs={2}>ID</Grid>
-          <Grid item xs={3}>Category</Grid>
-          <Grid item xs={3}>Location</Grid>
-          <Grid item xs={2}>Status</Grid>
-          <Grid item xs={2}>Action</Grid>
-        </Grid>
-
-        {/* Example rows */}
-        {[1, 2, 3].map((id) => (
-          <Grid
-            key={id}
-            container
-            sx={{ p: 1.5, borderBottom: "1px solid #eee", alignItems: "center" }}
-          >
-            <Grid item xs={2}>R10{id}</Grid>
-            <Grid item xs={3}>Ổ Gà</Grid>
-            <Grid item xs={3}>361 Ngô Quyền</Grid>
-            <Grid item xs={2}>Pending</Grid>
-            <Grid item xs={2}>
-              <Button size="small" endIcon={<ArrowForwardIcon />} href="/my-reports">
-                View
-              </Button>
-            </Grid>
-          </Grid>
-        ))}
-      </Card>
+      {/* ===================== RECENT REPORTS ===================== */}
+    <RecentReportsCard reports={sampleReports} />
     </Box>
+  );
+}
+
+/* ===== Reusable Feature Card ===== */
+function FeatureCard({ icon, title, desc, color, href }) {
+  return (
+    <Grid item xs={12} md={4}>
+      <Card
+        onClick={() => (window.location.href = href)}
+        sx={{
+          p: 4,
+          height: "100%",
+          borderRadius: "20px",
+          background: "rgba(255,255,255,0.05)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          transition: "0.25s",
+          cursor: "pointer",
+          "&:hover": {
+            transform: "translateY(-6px)",
+            boxShadow: `0 0 24px ${color}55`,
+          },
+        }}
+      >
+        <Avatar
+          sx={{
+            bgcolor: `${color}33`,
+            width: 64,
+            height: 64,
+            color: color,
+          }}
+        >
+          {icon}
+        </Avatar>
+
+        <Typography variant="h6" sx={{ mt: 2, fontWeight: 700 }}>
+          {title}
+        </Typography>
+        <Typography variant="body2" sx={{ opacity: 0.7, mt: 1 }}>
+          {desc}
+        </Typography>
+      </Card>
+    </Grid>
   );
 }

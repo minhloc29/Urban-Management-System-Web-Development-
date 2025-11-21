@@ -14,25 +14,36 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-// assets
+// icon
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 
 // ==============================|| PROGRESS BAR WITH LABEL ||============================== //
 
 function LinearProgressWithLabel({ value, ...others }) {
+  const theme = useTheme();
+
   return (
     <Stack sx={{ gap: 1 }}>
       <Stack direction="row" sx={{ justifyContent: 'space-between', mt: 1.5 }}>
         <Typography
           variant="h6"
           sx={{
-            color: 'primary.800'
+            color: theme.palette.primary.main
           }}
         >
           Progress
         </Typography>
-        <Typography variant="h6" sx={{ color: 'inherit' }}>{`${Math.round(value)}%`}</Typography>
+
+        <Typography
+          variant="h6"
+          sx={{
+            color: theme.palette.grey[100]
+          }}
+        >
+          {`${Math.round(value)}%`}
+        </Typography>
       </Stack>
+
       <LinearProgress
         aria-label="progress of theme"
         variant="determinate"
@@ -42,11 +53,11 @@ function LinearProgressWithLabel({ value, ...others }) {
           height: 10,
           borderRadius: 30,
           [`&.${linearProgressClasses.colorPrimary}`]: {
-            bgcolor: 'background.paper'
+            bgcolor: theme.palette.grey[700]
           },
           [`& .${linearProgressClasses.bar}`]: {
             borderRadius: 5,
-            bgcolor: 'primary.dark'
+            bgcolor: theme.palette.primary.main
           }
         }}
       />
@@ -54,7 +65,7 @@ function LinearProgressWithLabel({ value, ...others }) {
   );
 }
 
-// ==============================|| SIDEBAR - MENU CARD ||============================== //
+// ==============================|| SIDEBAR - MENU CARD (NEON VERSION) ||============================== //
 
 function MenuCard() {
   const theme = useTheme();
@@ -62,19 +73,26 @@ function MenuCard() {
   return (
     <Card
       sx={{
-        bgcolor: 'primary.light',
         mb: 2.75,
         overflow: 'hidden',
         position: 'relative',
+        borderRadius: '20px',
+        background: theme.palette.darkPaper,
+        backdropFilter: 'blur(16px)',
+        border: `1px solid ${theme.palette.primary800}`,
+        boxShadow: `0 0 24px ${theme.palette.primaryMain}40`, // neon glow
+
         '&:after': {
           content: '""',
           position: 'absolute',
-          width: 157,
-          height: 157,
-          bgcolor: 'primary.200',
+          width: 180,
+          height: 180,
+          background: theme.palette.primary200,
+          opacity: 0.12,
           borderRadius: '50%',
-          top: -105,
-          right: -96
+          top: -100,
+          right: -90,
+          filter: 'blur(40px)'
         }
       }}
     >
@@ -85,38 +103,48 @@ function MenuCard() {
               <Avatar
                 variant="rounded"
                 sx={{
-                  ...theme.typography.largeAvatar,
                   borderRadius: 2,
-                  color: 'primary.main',
-                  border: 'none',
-                  bgcolor: 'background.paper'
+                  color: theme.palette.primary.main,
+                  bgcolor: theme.palette.darkBackground,
+                  border: `1px solid ${theme.palette.primary.main}`,
+                  boxShadow: `0 0 12px ${theme.palette.primary.main}40`
                 }}
               >
-                <TableChartOutlinedIcon fontSize="inherit" />
+                <TableChartOutlinedIcon fontSize="small" />
               </Avatar>
             </ListItemAvatar>
+
             <ListItemText
               sx={{ mt: 0 }}
               primary={
                 <Typography
                   variant="subtitle1"
                   sx={{
-                    color: 'primary.800'
+                    color: theme.palette.primary.main,
+                    fontWeight: 600
                   }}
                 >
                   Get Extra Space
                 </Typography>
               }
-              secondary={<Typography variant="caption"> 28/23 GB</Typography>}
+              secondary={
+                <Typography variant="caption" sx={{ color: theme.palette.grey[300] }}>
+                  28/23 GB
+                </Typography>
+              }
             />
           </ListItem>
         </List>
+
         <LinearProgressWithLabel value={80} />
       </Box>
     </Card>
   );
 }
 
-export default memo(MenuCard);
+LinearProgressWithLabel.propTypes = {
+  value: PropTypes.number,
+  others: PropTypes.any
+};
 
-LinearProgressWithLabel.propTypes = { value: PropTypes.number, others: PropTypes.any };
+export default memo(MenuCard);

@@ -85,7 +85,7 @@ export default function EngineersPage() {
       {/* Table */}
       <Card sx={{ p: 3, borderRadius: 3, background: 'linear-gradient(135deg, #23272f 0%, #2c313a 100%)', color: '#e0e0e0', boxShadow: '0 4px 20px rgba(0,0,0,0.12)', border: '1px solid #444' }}>
         {/* Header */}
-        <Grid container sx={{ fontWeight: 700, color: '#bdbdbd', pb: 1, borderBottom: '2px solid #444' }}>
+        <Grid container sx={{ fontWeight: 700, color: '#bdbdbd', pb: 1, borderBottom: '2px solid #444', justifyContent: "space-around" }}>
           <Grid item xs={3}>Name</Grid>
           <Grid item xs={3}>Email</Grid>
           <Grid item xs={2}>Status</Grid>
@@ -101,7 +101,8 @@ export default function EngineersPage() {
             sx={{
               py: 2,
               borderBottom: '1px solid #444',
-              '&:hover': { backgroundColor: '#23272f', cursor: 'pointer' }
+              '&:hover': { backgroundColor: '#23272f', cursor: 'pointer' },
+              justifyContent: "space-around"
             }}
           >
             <Grid item xs={3}>{eng.name}</Grid>

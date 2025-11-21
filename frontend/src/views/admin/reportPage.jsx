@@ -128,7 +128,8 @@ export default function ReportsPage() {
             color: '#bdbdbd',
             borderBottom: '2px solid #444',
             pb: 1,
-            mb: 2
+            mb: 2,
+            justifyContent: "space-around"
           }}
         >
           <Grid item xs={2}>Report ID</Grid>
@@ -151,7 +152,7 @@ export default function ReportsPage() {
               '&:hover': {
                 backgroundColor: '#23272f',
                 cursor: 'pointer'
-              }
+              },justifyContent: "space-around"
             }}
           >
             <Grid item xs={2}>{row.id}</Grid>

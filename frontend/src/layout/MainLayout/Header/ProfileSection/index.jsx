@@ -20,6 +20,7 @@ import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { useNavigate } from 'react-router-dom';
 
 // project imports
 import UpgradePlanCard from './UpgradePlanCard';
@@ -34,6 +35,17 @@ import { IconLogout, IconSearch, IconSettings, IconUser } from '@tabler/icons-re
 // ==============================|| PROFILE MENU ||============================== //
 
 export default function ProfileSection() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // If you store token, clear it
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    // navigate to login page
+    navigate("/login");
+  };
+
   const theme = useTheme();
   const {
     state: { borderRadius }
@@ -206,12 +218,18 @@ export default function ProfileSection() {
                             }
                           />
                         </ListItemButton>
-                        <ListItemButton sx={{ borderRadius: `${borderRadius}px` }}>
+                        <ListItemButton
+                          sx={{ borderRadius: `${borderRadius}px` }}
+                          onClick={handleLogout}
+                        >
                           <ListItemIcon>
                             <IconLogout stroke={1.5} size="20px" />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Logout</Typography>} />
+                          <ListItemText
+                            primary={<Typography variant="body2">Logout</Typography>}
+                          />
                         </ListItemButton>
+
                       </List>
                     </Box>
                   </MainCard>
