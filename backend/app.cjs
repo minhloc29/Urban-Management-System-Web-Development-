@@ -3,6 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const path = require('path');
 
 dotenv.config();
 
@@ -20,6 +21,11 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// --- THÊM DÒNG NÀY ---
+// Mở quyền truy cập tĩnh cho thư mục 'uploads'
+// Ví dụ: Truy cập http://localhost:5000/uploads/anh.jpg sẽ xem được ảnh
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));

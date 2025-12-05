@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const incidentController = require('../controllers/incidentController');
-
+const upload = require('../middleware/uploadMiddleware'); // Import multer
+const authMiddleware = require('../middleware/authMiddleware');
 
 // ============================================================
 // ĐỊNH NGHĨA ROUTES CHO SỰ CỐ
@@ -13,10 +14,12 @@ const incidentController = require('../controllers/incidentController');
 router.get('/public', incidentController.getPublicIncidents);
 
 
-
-
-// (Sau này Lộc sẽ thêm các route cần bảo mật ở dưới đây)
-// ví dụ: router.post('/', authMiddleware, incidentController.createIncident);
-
+// --- ROUTE MỚI: TẠO BÁO CÁO ---
+// Phải có authMiddleware để nó giải mã token và tạo ra req.user
+router.post('/', 
+  authMiddleware, // <--- THÊM CÁI NÀY VÀO
+  upload.array('images', 5), 
+  incidentController.createIncident
+);
 
 module.exports = router;
