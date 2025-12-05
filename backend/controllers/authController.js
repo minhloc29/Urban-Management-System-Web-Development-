@@ -4,23 +4,6 @@ const Permission = require('../models/Permission'); // Model Permission (mới)
 const bcrypt = require('bcryptjs'); 
 const jwt = require('jsonwebtoken');
 
-/**
- * =========================================================================
- * FILE CONTROLLER 
- * =========================================================================
- *
- * Thay đổi trong hàm `register`:
- * 1. Nhận 'fullName' (thay vì 'username') từ req.body.
- * 2. Tìm Role theo enum mới ('citizen', 'authority', 'technician').
- * 3. Không hash password (vì Model User.js đã tự làm việc này).
- *
- * Thay đổi trong hàm `login`:
- * 1. Dùng "Nested Populate" để lấy User -> Role -> Permissions.
- * 2. Trả về "Hợp Đồng API" (JSON) mới cho Frontend (Mạnh):
- * - user.fullName
- * - user.role (tên role mới)
- * - user.permissions (mảng các object)
- */
 
 // ========================== REGISTER ========================== //
 exports.register = async (req, res) => {

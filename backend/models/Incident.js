@@ -1,13 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-/**
- * Đây là Model LÕI của toàn bộ dự án.
- * Nó NHÚNG (Embed) 4 schema con (Image, Update, Assignment, Rating)
- * Nó THAM CHIẾU (Ref) đến 3 models khác (User, IncidentType, Team)
- */
-
-// --- Các Sub-Schemas NHÚNG (Embedded) ---
 
 const IncidentImageSchema = new Schema({
   image_url: { type: String, required: true },
@@ -19,7 +12,7 @@ const IncidentImageSchema = new Schema({
 const IncidentUpdateSchema = new Schema({
   updater_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   update_time: { type: Date, default: Date.now },
-  status_from: { type: String }, // Trạng thái cũ (để log)
+  status_from: { type: String }, 
   status_to: { type: String, required: true }, // Trạng thái mới
   note: { type: String },
   visible_to_citizen: { type: Boolean, default: true }
