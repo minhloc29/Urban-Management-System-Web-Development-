@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ReportRow from '../../ui-component/admin/ReportRow';
-// import { api } from 'src/api/api';
 import debounce from 'lodash.debounce';
 
 export default function AssignCustomerPage() {
@@ -33,13 +32,25 @@ export default function AssignCustomerPage() {
     async ({ q = search, s = statusFilter, p = page, so = sort } = {}) => {
       setLoading(true);
       try {
-        const params = { page: p, limit, search: q || undefined, status: s || undefined, sort: so || undefined };
-        const data = await api.listReports(params);
-        // expected: { docs: [], totalPages: N, page: p }
-        setReports(data.docs || data || []);
-        setTotalPages(data.totalPages || Math.max(1, Math.ceil((data.total || (data.docs || []).length) / limit)));
+        const params = new URLSearchParams({
+          page: p,
+          limit,
+          search: q || '',
+          status: s || '',
+          sort: so || ''
+        });
+
+        const response = await fetch(`http://localhost:5000/api/admin/assign?${params}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setReports(data.data || []);
+          setTotalPages(data.totalPages || 1);
+        } else {
+          console.error('Failed to fetch reports:', data.message);
+        }
       } catch (err) {
-        console.error('Failed loading reports', err);
+        console.error('Error fetching reports:', err);
       } finally {
         setLoading(false);
       }
@@ -148,7 +159,7 @@ export default function AssignCustomerPage() {
         border: '1px solid rgba(255,255,255,0.03)'
       }}>
         {/* Header Row */}
-        <Grid container sx={{ px: 3, py: 2, fontWeight: 700, color: '#bdbdbd', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+        <Grid container sx={{ px: 3, py: 2, fontWeight: 700, color: '#bdbdbd', borderBottom: '1px solid rgba(255,255,255,0.03)', justifyContent: "space-around" }}>
           <Grid item xs={1.2}>ID</Grid>
           <Grid item xs={2}>Category</Grid>
           <Grid item xs={2.2}>Location</Grid>

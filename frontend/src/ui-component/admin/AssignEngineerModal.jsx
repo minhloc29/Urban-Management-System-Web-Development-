@@ -12,7 +12,6 @@ import {
   Box,
   CircularProgress
 } from '@mui/material';
-import { api } from 'src/api/api';
 
 export default function AssignEngineerModal({ open, onClose, reportId, onAssigned }) {
   const [engineers, setEngineers] = useState([]);
@@ -24,10 +23,16 @@ export default function AssignEngineerModal({ open, onClose, reportId, onAssigne
   useEffect(() => {
     if (!open) return;
     setLoading(true);
-    api.listEngineers()
-      .then((data) => setEngineers(data || []))
-      .catch(() => setEngineers([]))
-      .finally(() => setLoading(false));
+
+    // Simulate fetching fake data
+    setTimeout(() => {
+      setEngineers([
+        { id: '1', name: 'Engineer A' },
+        { id: '2', name: 'Engineer B' },
+        { id: '3', name: 'Engineer C' }
+      ]);
+      setLoading(false);
+    }, 1000);
   }, [open]);
 
   useEffect(() => {
@@ -41,12 +46,15 @@ export default function AssignEngineerModal({ open, onClose, reportId, onAssigne
     if (!selected) return alert('Please pick an engineer');
     setSaving(true);
     try {
-      await api.assignEngineer(reportId, { engineerId: selected, note });
-      onAssigned && onAssigned();
-      onClose();
+      // Simulate assignment success
+      setTimeout(() => {
+        alert('Engineer assigned successfully!');
+        onAssigned && onAssigned();
+        onClose();
+        setSaving(false);
+      }, 1000);
     } catch (err) {
-      alert(err.message || 'Failed to assign');
-    } finally {
+      alert('Failed to assign');
       setSaving(false);
     }
   };
@@ -68,7 +76,7 @@ export default function AssignEngineerModal({ open, onClose, reportId, onAssigne
             >
               <MenuItem value="">Select engineer</MenuItem>
               {engineers.map((eng) => (
-                <MenuItem key={eng._id || eng.id} value={eng._id || eng.id}>
+                <MenuItem key={eng.id} value={eng.id}>
                   {eng.name}
                 </MenuItem>
               ))}

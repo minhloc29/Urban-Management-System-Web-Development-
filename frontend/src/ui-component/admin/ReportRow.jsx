@@ -6,7 +6,6 @@ import { styled } from '@mui/material/styles';
 import StatusChip from './StatusChip';
 import AssignEngineerModal from './AssignEngineerModal';
 
-// small rotate animation for expand icon
 const RotIcon = styled(ExpandMoreIcon)(({ expand }) => ({
   transform: expand ? 'rotate(180deg)' : 'rotate(0deg)',
   transition: 'transform 0.2s ease'
@@ -27,35 +26,41 @@ export default function ReportRow({ report, onAssigned }) {
         sx={{
           py: 2,
           borderBottom: '1px solid rgba(255,255,255,0.04)',
-          '&:hover': { background: 'rgba(255,255,255,0.01)' }
+          '&:hover': { background: 'rgba(255,255,255,0.01)' },
+          justifyContent: "space-around"
         }}
       >
         <Grid item xs={1.2}>
-          <Typography>{report.id}</Typography>
+          <Typography>{report._id}</Typography>
         </Grid>
 
         <Grid item xs={2}>
-          <Typography>{report.category}</Typography>
+              <Typography variant="body2" noWrap>
+                {report.type_id?.name || "Unknown"}
+              </Typography>
         </Grid>
 
         <Grid item xs={2.2}>
-          <Typography>{report.location}</Typography>
+          <Typography variant="body2" noWrap>
+            {report.location?.coordinates ? report.location.coordinates.join(', ') : 'Unknown'}
+          </Typography>
         </Grid>
 
         <Grid item xs={2}>
-          <Box display="flex" alignItems="center" gap={1}>
-            <Avatar sx={{ width: 28, height: 28, fontSize: 13 }}>{(report.citizen || 'U')[0]}</Avatar>
-            <Typography>{report.citizen}</Typography>
-          </Box>
-        </Grid>
+              <Typography variant="body2" noWrap>
+                {report.reporter_id?.fullName || "Unknown"}
+              </Typography>
+            </Grid>
 
         <Grid item xs={1.6}>
           <StatusChip status={report.status} />
         </Grid>
 
         <Grid item xs={2}>
-          <Typography>{report.engineer || '—'}</Typography>
-        </Grid>
+              <Typography variant="body2" noWrap>
+                {report.assigned_team_id ? report.assigned_team_id._id : "Unassigned"}
+              </Typography>
+            </Grid>
 
         <Grid item xs={0.8} textAlign="right">
           <IconButton size="small" onClick={() => setOpen((s) => !s)}>

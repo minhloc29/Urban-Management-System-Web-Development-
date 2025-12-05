@@ -1,14 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-/**
- * Model này định nghĩa các đội kỹ thuật (Technician)
- * Nó nhúng (embeds) danh sách thành viên.
- */
-
-// Schema nhúng cho thành viên
 const TeamMemberSchema = new Schema({
-  user_id: { // Tham chiếu đến User Model
+  user_id: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -18,9 +12,8 @@ const TeamMemberSchema = new Schema({
     enum: ['leader', 'member'],
     default: 'member'
   }
-}, { _id: false }); // _id: false vì đây là sub-document
+}, { _id: false }); 
 
-// Schema chính cho Team
 const teamSchema = new Schema({
   name: {
     type: String,
@@ -34,7 +27,7 @@ const teamSchema = new Schema({
     type: Boolean,
     default: true
   },
-  members: [TeamMemberSchema] // Mảng thành viên được nhúng
+  members: [TeamMemberSchema] 
 }, {
   timestamps: { createdAt: 'created_at' }
 });

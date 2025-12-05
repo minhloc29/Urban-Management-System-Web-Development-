@@ -23,8 +23,14 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+
+// USER
 app.use('/api/incidents', require('./routes/incidentRoutes'));
 app.use('/api/user/upload', require('./routes/user.upload'));
+
+// ADMIN
+app.use('/api/admin/assign', require('./routes/admin/assignRoutes'));
+app.use('/api/admin/engineer', require('./routes/admin/adminEngineerRoutes'));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
