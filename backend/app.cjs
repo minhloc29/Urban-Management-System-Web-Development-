@@ -23,6 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/incidents', require('./routes/incidentRoutes'));
 app.use('/api/user/upload', require('./routes/user.upload'));
 
 app.use((err, req, res, next) => {
