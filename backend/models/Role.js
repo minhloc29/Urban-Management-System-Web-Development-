@@ -6,12 +6,11 @@ const roleSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    enum: ['citizen', 'authority', 'technician'] // Đã sửa
+    enum: ['citizen', 'authority', 'technician'] 
   },
-  // THAY ĐỔI: Chuyển từ [String] sang Tham chiếu (Ref)
   permissions: [{
     type: Schema.Types.ObjectId,
-    ref: 'Permission' // Tham chiếu đến Model 'Permission'
+    ref: 'Permission'
   }]
 });
 

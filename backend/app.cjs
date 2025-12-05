@@ -3,6 +3,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const path = require('path');
 
 dotenv.config();
 
@@ -10,7 +11,6 @@ require('./models/Permission');
 require('./models/Role');
 require('./models/User');
 require('./models/IncidentType');
-require('./models/Team');
 require('./models/Incident');
 
 const app = express();
@@ -26,7 +26,7 @@ app.use('/api/auth', require('./routes/auth'));
 
 // USER
 app.use('/api/incidents', require('./routes/incidentRoutes'));
-app.use('/api/user/upload', require('./routes/user.upload'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ADMIN
 app.use('/api/admin/assign', require('./routes/admin/assignRoutes'));
