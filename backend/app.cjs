@@ -11,7 +11,6 @@ require('./models/Permission');
 require('./models/Role');
 require('./models/User');
 require('./models/IncidentType');
-require('./models/Team');
 require('./models/Incident');
 
 const app = express();

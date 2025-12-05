@@ -1,10 +1,11 @@
 import React from "react";
 import { Card, Avatar, Typography, Box, Grid } from "@mui/material";
 
+// Nhận props 'name' và 'role' từ cha truyền xuống
 export default function UserProfileCard({
   avatarSrc,
-  name = "Loc Nguyen",
-  role = "Smart-City Citizen",
+  name = "Citizen", // Giá trị mặc định nếu không truyền
+  role = "Smart-Citizen",
   stats = [
     { num: "12", label: "Pending" },
     { num: "37", label: "Resolved" },
@@ -37,17 +38,17 @@ export default function UserProfileCard({
           }}
         />
 
-        {/* Name */}
+        {/* Name - Hiển thị tên thật */}
         <Typography variant="h4" sx={{ mt: 3, fontWeight: 700, color: "#f1f5f9" }}>
           {name}
         </Typography>
 
-        {/* Role */}
-        <Typography sx={{ opacity: 0.65, fontSize: "1.05rem" }}>
+        {/* Role - Hiển thị vai trò thật */}
+        <Typography sx={{ opacity: 0.65, fontSize: "1.05rem", color: "#cbd5e1" }}>
           {role}
         </Typography>
 
-        {/* Stats Section */}
+        {/* Stats Section (Giữ nguyên) */}
         <Box
           sx={{
             display: "flex",

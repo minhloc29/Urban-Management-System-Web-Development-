@@ -66,6 +66,10 @@ export default function AuthLogin() {
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', user.role);
 
+        // 3. --- QUAN TRỌNG: LƯU THÔNG TIN USER (Để hiển thị tên ở Home) ---
+        localStorage.setItem('user', JSON.stringify(user));
+        // ------------------------------------------------------------------
+
         if (user.role === 'authority') navigate('/admin/dashboard');
         else if (user.role === 'technician') navigate('/engineer/dashboard');
         else navigate('/user/home');

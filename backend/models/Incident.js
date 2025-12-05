@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+/**
+ * INCIDENT MODEL (ĐÃ UPDATE: BỎ TEAM -> GÁN CHO USER)
+ */
+
+// --- Các Sub-Schemas NHÚNG ---
 
 const IncidentImageSchema = new Schema({
   image_url: { type: String, required: true },
@@ -12,15 +17,16 @@ const IncidentImageSchema = new Schema({
 const IncidentUpdateSchema = new Schema({
   updater_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   update_time: { type: Date, default: Date.now },
-  status_from: { type: String }, 
-  status_to: { type: String, required: true }, // Trạng thái mới
+  status_from: { type: String },
+  status_to: { type: String, required: true },
   note: { type: String },
   visible_to_citizen: { type: Boolean, default: true }
 }, { _id: false });
 
+// SỬA: Lịch sử phân công giờ gán cho 'assignee_id' (User) thay vì 'team_id'
 const IncidentAssignmentSchema = new Schema({
-  team_id: { type: Schema.Types.ObjectId, ref: 'Team', required: true },
-  assigned_by: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  assignee_id: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // Người được giao (Technician)
+  assigned_by: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // Người giao (Manager)
   assigned_at: { type: Date, default: Date.now },
   note: { type: String }
 }, { _id: false });
@@ -36,26 +42,29 @@ const IncidentRatingSchema = new Schema({
 // --- Schema CHÍNH (Incident) ---
 
 const incidentSchema = new Schema({
-  // --- Tham chiếu (Refs) ---
+  // Người báo cáo
   reporter_id: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     index: true
   },
+  // Loại sự cố
   type_id: {
     type: Schema.Types.ObjectId,
     ref: 'IncidentType',
     required: true
   },
-  assigned_team_id: { // Đội đang xử lý (current)
+  
+  // SỬA: Thay 'assigned_team_id' bằng 'assigned_to' (User)
+  assigned_to: { 
     type: Schema.Types.ObjectId,
-    ref: 'Team',
+    ref: 'User', // Tham chiếu thẳng tới User (Technician)
     default: null,
     index: true
   },
 
-  // --- Dữ liệu lõi ---
+  // Dữ liệu lõi
   title: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },
   status: {
@@ -82,17 +91,16 @@ const incidentSchema = new Schema({
     }
   },
 
-  // --- Dữ liệu NHÚNG (Embedded) ---
+  // Dữ liệu NHÚNG
   images: [IncidentImageSchema],
   updates: [IncidentUpdateSchema],
-  assignments: [IncidentAssignmentSchema], // Lịch sử phân công
-  rating: IncidentRatingSchema // Chỉ 1 đánh giá
+  assignments: [IncidentAssignmentSchema], 
+  rating: IncidentRatingSchema
 
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
-// BẮT BUỘC: Tạo index 2dsphere để query vị trí
 incidentSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('Incident', incidentSchema);

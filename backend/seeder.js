@@ -12,7 +12,6 @@ const User = require('./models/User');
 const Role = require('./models/Role');
 const Permission = require('./models/Permission');
 const IncidentType = require('./models/IncidentType');
-const Team = require('./models/Team');
 const Incident = require('./models/Incident');
 
 // Kết nối DB
