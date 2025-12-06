@@ -102,7 +102,7 @@ export default function ReportProblem() {
         formData.append("images", image);
       });
 
-      const res = await apiPost("/api/incidents", formData);
+      const res = await apiPost("/api/user/incidents", formData);
 
       if (res.success) {
         alert("Gửi báo cáo thành công!");

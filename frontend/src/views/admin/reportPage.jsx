@@ -18,6 +18,8 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { apiGet, apiPost } from "../../utils/api";
+import AddEngineer from "./addEngineer";
+
 export default function ReportsPage() {
   const [sort, setSort] = useState("newest");
   const [search, setSearch] = useState("");
@@ -157,7 +159,18 @@ export default function ReportsPage() {
   }}
 >
   <TableContainer sx={{ maxHeight: 500 }}>
-    <Table stickyHeader>
+    <Table stickyHeader sx={{
+    '& .MuiTableCell-stickyHeader': {
+      backgroundColor: '#0f1720 !important',
+      color: '#bdbdbd !important',
+      fontWeight: 700,
+      position: 'sticky',
+      top: 0,
+      zIndex: 5,
+      backgroundClip: 'padding-box',
+      opacity: 1,
+    }
+  }}>
 
       {/* Header */}
       <TableHead>

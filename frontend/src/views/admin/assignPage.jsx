@@ -165,21 +165,24 @@ export default function AssignCustomerPage() {
         </Grid>
       </Grid>
 
-      {/* Table Wrapper */}
-      <Card sx={{
-        p: 0,
-        borderRadius: 3,
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
-        color: '#e0e0e0',
-        border: '1px solid rgba(255,255,255,0.03)'
-      }}>
+      
         <TableContainer sx={{ maxHeight: 580 }}>
-  <Table stickyHeader>
+  <Table stickyHeader sx={{
+    '& .MuiTableCell-stickyHeader': {
+      backgroundColor: '#0f1720 !important',
+      color: '#bdbdbd !important',
+      fontWeight: 700,
+      position: 'sticky',
+      top: 0,
+      zIndex: 5,
+      backgroundClip: 'padding-box',
+      opacity: 1,
+    }
+  }}>
 
     <TableHead>
-      <TableRow sx={{ backgroundColor: 'white' }}>
-        <TableCell sx={{ color: 'white', minWidth: 80 }}>ID</TableCell>
+      <TableRow >
+        <TableCell sx={{}}>ID</TableCell>
         <TableCell sx={{ color: '#bdbdbd', minWidth: 120 }}>Category</TableCell>
         <TableCell sx={{ color: '#bdbdbd', minWidth: 160 }}>Location</TableCell>
         <TableCell sx={{ color: '#bdbdbd', minWidth: 140 }}>Citizen</TableCell>
@@ -299,7 +302,6 @@ export default function AssignCustomerPage() {
             shape="rounded"
           />
         </Box>
-      </Card>
     </Box>
   );
 }

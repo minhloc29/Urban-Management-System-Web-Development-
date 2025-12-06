@@ -50,7 +50,7 @@ export default function MyReportsPage() {
   useEffect(() => {
     const fetchFromDB = async () => {
       try {
-        const res = await apiGet("/api/incidents/public");
+        const res = await apiGet("/api/user/incidents/public");
 
         if (res.success) {
           setReports(res.data);
@@ -100,7 +100,18 @@ export default function MyReportsPage() {
       {/* ---------- TABLE ---------- */}
       <Paper sx={{ width: "100%", overflow: "hidden", borderRadius: 3 }}>
         <TableContainer sx={{ maxHeight: 550 }}>
-          <Table stickyHeader aria-label="incident table">
+          <Table stickyHeader aria-label="incident table" sx={{
+            '& .MuiTableCell-stickyHeader': {
+              backgroundColor: '#0f1720 !important',
+              color: '#bdbdbd !important',
+              fontWeight: 700,
+              position: 'sticky',
+              top: 0,
+              zIndex: 5,
+              backgroundClip: 'padding-box',
+              opacity: 1,
+            }
+          }}>
 
             {/* TABLE HEADER */}
             <TableHead>

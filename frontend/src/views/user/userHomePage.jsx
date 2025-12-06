@@ -51,7 +51,7 @@ export default function UserHomePage() {
     const fetchRecentReports = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/incidents/public"
+          "http://localhost:5000/api/user/incidents/public"
         );
 
         if (res.data.success) {
