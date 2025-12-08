@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+// --- 1. THÊM IMPORT NÀY ---
+import { useNavigate } from "react-router-dom"; 
+// --------------------------
 import {
   Box,
   Card,
-  Grid,
   Typography,
   Chip,
   Button,
@@ -10,202 +12,253 @@ import {
   Pagination,
   MenuItem,
   TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Tooltip,
+  CircularProgress,
+  Alert
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+
+import { apiGet } from "../../utils/api";
 
 export default function TechnicianMyTasksPage() {
+  // --- 2. KHỞI TẠO NAVIGATE ---
+  const navigate = useNavigate();
+  // ---------------------------
+
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [myTasks, setMyTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Example data — later from API
-  const myTasks = [
-    {
-      id: "R101",
-      category: "Rác thải",
-      location: "Phường 3",
-      deadline: "12/11",
-      status: "in_progress",
-    },
-    {
-      id: "R102",
-      category: "Ổ gà",
-      location: "Quận 10",
-      deadline: "13/11",
-      status: "assigned",
-    },
-    {
-      id: "R103",
-      category: "Đèn hỏng",
-      location: "Phường 5",
-      deadline: "10/11",
-      status: "completed",
-    },
-  ];
+  const fetchTasks = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Gọi API lấy danh sách
+      // Lưu ý: Nếu Backend chạy local không qua Docker thì dùng http://localhost:5000/api/incidents/assigned
+      const response = await apiGet("/api/user/incidents/assigned");
+      
+      const data = response.data || response || []; 
+      
+      const formattedTasks = data.map(item => ({
+        taskId: item._id || item.id || "N/A",
+        title: item.title || item.description || "Sự cố",
+        incidentType: item.incidentType?.name || item.incidentType || "Chưa phân loại",
+        address: item.address || item.location || "Chưa cập nhật",
+        priority: item.priority || "medium",
+        deadline: item.deadline ? new Date(item.deadline).toLocaleDateString('vi-VN') : "Không có",
+        status: item.status || "assigned"
+      }));
 
-  const statusChip = (status) => {
-    switch (status) {
-      case "assigned":
-        return <Chip label="Assigned" color="info" size="small" />;
-      case "in_progress":
-        return <Chip label="In Progress" color="warning" size="small" />;
-      case "completed":
-        return <Chip label="Completed" color="success" size="small" />;
-      default:
-        return <Chip label="Unknown" size="small" />;
+      setMyTasks(formattedTasks);
+
+    } catch (err) {
+      console.error("❌ Lỗi gọi API:", err);
+      setError("Không thể tải danh sách công việc.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const actionButton = (status) => {
+  useEffect(() => { fetchTasks(); }, []);
+
+  const getStatusChip = (status) => {
+    switch (status) {
+      case "assigned":
+        return <Chip label="Mới phân công" color="info" variant="outlined" size="small" sx={{fontWeight: 'bold'}} />;
+      case "in_progress":
+        return <Chip label="Đang xử lý" color="warning" size="small" sx={{color: '#fff', fontWeight: 'bold'}} />;
+      case "completed":
+        return <Chip label="Hoàn thành" color="success" size="small" sx={{fontWeight: 'bold'}} />;
+      case "rejected":
+        return <Chip label="Đã từ chối" color="error" size="small" />;
+      default:
+        return <Chip label="Không xác định" size="small" />;
+    }
+  };
+
+  const getPriorityInfo = (priority) => {
+      switch(priority) {
+          case 'high': return <span style={{color: '#d32f2f', fontWeight: 'bold'}}>Cao 🔥</span>;
+          case 'medium': return <span style={{color: '#ed6c02', fontWeight: 'bold'}}>Trung bình</span>;
+          case 'low': return <span style={{color: '#2e7d32', fontWeight: 'bold'}}>Thấp</span>;
+          default: return 'Bình thường';
+      }
+  }
+
+  // --- 3. SỬA HÀM NÀY: NHẬN THÊM taskId VÀ GẮN SỰ KIỆN CLICK ---
+  const getActionButton = (status, taskId) => {
     if (status === "assigned")
       return (
-        <Button variant="contained" color="primary" size="small">
-          Start Task
+        <Button 
+            variant="contained" color="primary" size="small" disableElevation
+            // Khi bấm "Bắt đầu" -> Chuyển sang trang update luôn để đổi trạng thái
+            onClick={() => navigate(`/engineer/update/${taskId}`)}
+        >
+          Bắt đầu
         </Button>
       );
     if (status === "in_progress")
       return (
-        <Button variant="contained" color="warning" size="small">
-          Update
+        <Button 
+            variant="contained" color="warning" size="small" disableElevation sx={{color: '#fff'}}
+            // Khi bấm "Cập nhật" -> Chuyển sang trang update kèm ID
+            onClick={() => navigate(`/engineer/update/${taskId}`)}
+        >
+          Cập nhật
         </Button>
       );
     if (status === "completed")
       return (
-        <Button variant="outlined" size="small" disabled>
-          Done
+        <Button variant="outlined" color="success" size="small" disabled>
+          Xong
         </Button>
       );
+    return null;
   };
+  // -------------------------------------------------------------
+
+  const filteredTasks = myTasks.filter(task => {
+      const matchStatus = filterStatus === 'all' || task.status === filterStatus;
+      const matchSearch = search === '' || 
+                          task.title.toLowerCase().includes(search.toLowerCase()) || 
+                          task.taskId.toLowerCase().includes(search.toLowerCase()) ||
+                          task.address.toLowerCase().includes(search.toLowerCase());
+      return matchStatus && matchSearch;
+  });
 
   return (
     <Box sx={{ p: 3 }}>
-      {/* Page Title */}
-      <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
-        My Tasks
-      </Typography>
-      <Typography variant="subtitle2" sx={{ color: "#777C6D", mb: 3 }}>
-        Tasks assigned to you
-      </Typography>
+      <Box sx={{mb: 4}}>
+        <Typography variant="h3" sx={{ fontWeight: 700, color: '#1e88e5' }}>
+          Danh sách công việc
+        </Typography>
+        <Typography variant="body1" sx={{ color: "#616161", mt: 1 }}>
+          Quản lý và cập nhật tiến độ các sự cố được phân công cho bạn.
+        </Typography>
+      </Box>
 
-      {/* Filters */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        {/* Search */}
-        <Grid item xs={12} sm={8} md={4}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "#FFFFFF",
-              borderRadius: 2,
-              px: 2,
-              py: 1,
-              border: "1px solid #E0E0E0",
-            }}
-          >
-            <SearchIcon sx={{ mr: 1, color: "#777C6D" }} />
-            <InputBase
-              placeholder="Search task..."
-              fullWidth
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </Box>
-        </Grid>
+      {/* Toolbar */}
+      <Card sx={{ p: 2, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+            <Box sx={{ display: "flex", alignItems: "center", backgroundColor: "#F5F5F5", borderRadius: 2, px: 2, py: 1, flexGrow: 1, minWidth: '250px' }}>
+                <SearchIcon sx={{ mr: 1, color: "#757575" }} />
+                <InputBase
+                    placeholder="Tìm kiếm theo mã, tiêu đề, địa chỉ..."
+                    fullWidth
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </Box>
 
-        {/* Status Filter */}
-        <Grid item xs={12} sm={4} md={2} sx={{ ml: "auto" }}>
-          <TextField
-            select
-            fullWidth
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            sx={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: 2,
-              height: "42px",
-            }}
-          >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value="assigned">Assigned</MenuItem>
-            <MenuItem value="in_progress">In Progress</MenuItem>
-            <MenuItem value="completed">Completed</MenuItem>
-          </TextField>
-        </Grid>
-      </Grid>
-
-      {/* Task List */}
-      <Card
-        sx={{
-          p: 3,
-          borderRadius: 3,
-          backgroundColor: "#F7F7F7",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
-        }}
-      >
-        {/* Header */}
-        <Grid
-          container
-          sx={{
-            fontWeight: 600,
-            color: "#777C6D",
-            mb: 2,
-            justifyContent: "space-around",
-          }}
-        >
-          <Grid item xs={2}>
-            ID
-          </Grid>
-          <Grid item xs={2}>
-            Category
-          </Grid>
-          <Grid item xs={2}>
-            Location
-          </Grid>
-          <Grid item xs={2}>
-            Status
-          </Grid>
-          <Grid item xs={2}>
-            Deadline
-          </Grid>
-          <Grid item xs={2}>
-            Action
-          </Grid>
-        </Grid>
-
-        {/* Rows */}
-        {myTasks.map((task, idx) => (
-          <Grid
-            key={idx}
-            container
-            sx={{
-              py: 2,
-              borderBottom: "1px solid #E0E0E0",
-              justifyContent: "space-around",
-            }}
-          >
-            <Grid item xs={2}>
-              {task.id}
-            </Grid>
-            <Grid item xs={2}>
-              {task.category}
-            </Grid>
-            <Grid item xs={2}>
-              {task.location}
-            </Grid>
-            <Grid item xs={2}>
-              {statusChip(task.status)}
-            </Grid>
-            <Grid item xs={2}>
-              {task.deadline}
-            </Grid>
-            <Grid item xs={2}>{actionButton(task.status)}</Grid>
-          </Grid>
-        ))}
-
-        {/* Pagination */}
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-          <Pagination count={10} variant="outlined" shape="rounded" />
+            <TextField
+                select
+                size="small"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                sx={{ minWidth: 150, backgroundColor: '#fff' }}
+                InputProps={{ startAdornment: <FilterListIcon fontSize="small" sx={{mr: 1, color: '#757575'}} /> }}
+            >
+                <MenuItem value="all">Tất cả trạng thái</MenuItem>
+                <MenuItem value="assigned">Mới phân công</MenuItem>
+                <MenuItem value="in_progress">Đang xử lý</MenuItem>
+                <MenuItem value="completed">Đã hoàn thành</MenuItem>
+            </TextField>
+            
+            <Button onClick={fetchTasks} variant="outlined" sx={{height: 40}}>
+                Làm mới
+            </Button>
         </Box>
       </Card>
+
+      {error && <Alert severity="error" sx={{mb: 3}}>{error}</Alert>}
+
+      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.05)', overflow: 'hidden', minHeight: 300 }}>
+        {loading ? (
+            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 300, flexDirection: 'column', gap: 2}}>
+                <CircularProgress />
+                <Typography color="text.secondary">Đang tải danh sách công việc...</Typography>
+            </Box>
+        ) : filteredTasks.length === 0 ? (
+            <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200}}>
+                <Typography color="text.secondary">Không tìm thấy công việc nào phù hợp.</Typography>
+            </Box>
+        ) : (
+            <Table sx={{ minWidth: 650 }} aria-label="task table">
+            <TableHead sx={{ backgroundColor: '#F0F4F8' }}>
+                <TableRow>
+                <TableCell sx={{ fontWeight: 'bold', color: '#455a64' }}>Mã công việc</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#455a64' }}>Sự cố</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#455a64' }}>Địa điểm</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#455a64' }}>Mức độ</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#455a64' }}>Hạn chót</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', color: '#455a64' }}>Trạng thái</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 'bold', color: '#455a64' }}>Thao tác</TableCell>
+                </TableRow>
+            </TableHead>
+            
+            <TableBody>
+                {filteredTasks.map((task) => (
+                <TableRow
+                    key={task.taskId}
+                    hover
+                    sx={{ 
+                        '&:last-child td, &:last-child th': { border: 0 },
+                        transition: '0.2s',
+                        '&:hover': { backgroundColor: '#F9FAFB' }
+                    }}
+                >
+                    <TableCell component="th" scope="row" sx={{fontFamily: 'monospace', fontWeight: 600, color: '#1976d2'}}>
+                    {task.taskId.substring(0, 8)}...
+                    </TableCell>
+                    <TableCell>
+                        <Typography variant="body2" sx={{fontWeight: 600}}>{task.title}</Typography>
+                        <Typography variant="caption" color="text.secondary">{task.incidentType}</Typography>
+                    </TableCell>
+                    <TableCell sx={{maxWidth: 200}}>
+                        <Typography variant="body2" noWrap title={task.address}>
+                            {task.address}
+                        </Typography>
+                    </TableCell>
+                    <TableCell>{getPriorityInfo(task.priority)}</TableCell>
+                    <TableCell>{task.deadline}</TableCell>
+                    <TableCell>{getStatusChip(task.status)}</TableCell>
+                    <TableCell align="center">
+                        <Box sx={{display: 'flex', justifyContent: 'center', gap: 1}}>
+                            
+                            {/* --- 4. TRUYỀN taskId VÀO HÀM --- */}
+                            {getActionButton(task.status, task.taskId)}
+                            {/* -------------------------------- */}
+
+                            <Tooltip title="Xem chi tiết">
+                                <IconButton size="small">
+                                    <InfoOutlinedIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    </TableCell>
+                </TableRow>
+                ))}
+            </TableBody>
+            </Table>
+        )}
+      </TableContainer>
+
+      <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
+        <Pagination count={Math.ceil(filteredTasks.length / 5)} color="primary" shape="rounded" />
+      </Box>
     </Box>
   );
 }

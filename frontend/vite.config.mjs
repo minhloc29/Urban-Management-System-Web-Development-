@@ -15,7 +15,14 @@ export default defineConfig(({ mode }) => {
     server: {
       open: true, // auto open browser
       port: PORT,
-      host: true
+      host: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:5000', // Trỏ về Backend chạy cổng 5000
+          changeOrigin: true,
+          secure: false,
+        }
+      }
     },
     build: {
       chunkSizeWarningLimit: 1600

@@ -4,6 +4,7 @@ import { lazy } from 'react';
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import ProtectedRoute from './ProtectedRoutes';
+
 // dashboard routing
 const DashboardDefault = Loadable(lazy(() => import('views/engineer/dashboard')));
 
@@ -31,10 +32,19 @@ const EngineerRoutes = {
       path: 'my_task',
       element: <MyTaskPage />
     },
+    // --- SỬA QUAN TRỌNG TẠI ĐÂY ---
     {
-      path: 'task_update',
+      // Thêm /:id để bắt tham số ID từ URL
+      // Ví dụ: /engineer/task_update/6571b...
+      path: 'update/:id', 
       element: <TaskUpdatePage />
     },
+    // (Tuỳ chọn) Giữ lại route gốc để tránh lỗi nếu người dùng xóa ID thủ công
+    {
+      path: 'update',
+      element: <TaskUpdatePage />
+    },
+    // -------------------------------
     {
       path: 'history',
       element: <HistoryPage />

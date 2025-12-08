@@ -1,17 +1,11 @@
 const jwt = require('jsonwebtoken');
 
-
 const authMiddleware = (req, res, next) => {
-  // 1. Lấy token từ header của request
-  // Format chuẩn: "Authorization: Bearer <token>"
+  // 1. Lấy token từ header
   const authHeader = req.header('Authorization');
 
-
-  // --- THÊM LOG ĐỂ DEBUG ---
-  console.log("👉 Auth Header nhận được:", authHeader); 
-  // -------------------------
-  // Kiểm tra xem header có tồn tại không
-
+  // DEBUG: In ra để kiểm tra
+  // console.log("👉 Auth Header:", authHeader); 
 
   if (!authHeader) {
     return res.status(401).json({
@@ -20,11 +14,9 @@ const authMiddleware = (req, res, next) => {
     });
   }
 
-
   try {
-    // 2. Lấy chuỗi token thực tế (bỏ chữ "Bearer " ở đầu)
+    // 2. Lấy chuỗi token thực tế
     const token = authHeader.replace('Bearer ', '');
-
 
     if (!token) {
       return res.status(401).json({
@@ -33,20 +25,23 @@ const authMiddleware = (req, res, next) => {
       });
     }
 
-
-    // 3. Giải mã (Verify) token bằng khóa bí mật (JWT_SECRET)
-    // Biến decoded sẽ chứa thông tin user (id, role...) mà Lộc đã gói vào khi Login
+    // 3. Giải mã Token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-
-    // 4. Gán thông tin user vào request (req.user)
-    // Để các hàm xử lý phía sau (như createIncident) có thể dùng được
+    // 4. Gán thông tin user vào request
     req.user = decoded;
 
+    // --- SỬA QUAN TRỌNG: CHUẨN HÓA ID ---
+    // Token của Lộc lưu là 'id', nhưng Mongoose và Controller thường dùng '_id'
+    // Ta gán thêm _id = id để code ở đâu cũng chạy được
+    if (req.user.id && !req.user._id) {
+        req.user._id = req.user.id;
+    }
+    // -------------------------------------
 
-    // Cho phép đi tiếp sang hàm tiếp theo (Controller)
+    console.log("✅ Auth Success | User ID:", req.user._id);
+
     next();
-
 
   } catch (err) {
     console.error('Auth Middleware Error:', err.message);
@@ -56,6 +51,5 @@ const authMiddleware = (req, res, next) => {
     });
   }
 };
-
 
 module.exports = authMiddleware;

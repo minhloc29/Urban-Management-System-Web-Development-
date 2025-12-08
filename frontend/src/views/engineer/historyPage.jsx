@@ -1,180 +1,123 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  Box,
-  Card,
-  Grid,
-  Typography,
-  TextField,
-  MenuItem,
-  InputBase,
-  Chip,
-  Pagination,
+  Box, Card, Typography, Chip, InputBase, Table, TableBody, TableCell, 
+  TableContainer, TableHead, TableRow, Paper, CircularProgress
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { apiGet } from "../../utils/api"; 
 
 export default function TechnicianHistoryPage() {
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [historyTasks, setHistoryTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Example Task History (later fetch from API)
-  const historyData = [
-    {
-      id: "R101",
-      category: "Rác thải",
-      location: "Phường 3",
-      status: "completed",
-      date: "12/11",
-    },
-    {
-      id: "R102",
-      category: "Ổ gà",
-      location: "Quận 10",
-      status: "in_progress",
-      date: "13/11",
-    },
-    {
-      id: "R103",
-      category: "Đèn hỏng",
-      location: "Phường 5",
-      status: "completed",
-      date: "10/11",
-    },
-  ];
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        setLoading(true);
+        const response = await apiGet('/api/user/incidents/assigned');
+        const data = response.data || response || [];
 
-  const statusChip = (status) => {
-    if (status === "completed")
-      return <Chip label="Completed" color="success" size="small" />;
-    if (status === "in_progress")
-      return <Chip label="In Progress" color="warning" size="small" />;
-    return <Chip label="Pending" color="default" size="small" />;
+        // --- FIX LOGIC: LỌC CHUẨN LỊCH SỬ ---
+        // Chỉ lấy những việc đã KẾT THÚC (Hoàn thành hoặc Bị từ chối)
+        // Những việc đang làm (in_progress) sẽ ở bên trang My Tasks
+        const finishedTasks = data.filter(t => 
+            ['completed', 'rejected'].includes(t.status)
+        );
+
+        // Sắp xếp: Mới nhất lên đầu
+        finishedTasks.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+        setHistoryTasks(finishedTasks);
+      } catch (err) {
+        console.error("Lỗi tải lịch sử:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHistory();
+  }, []);
+
+  const getStatusChip = (status) => {
+    switch (status) {
+      case "completed": return <Chip label="Hoàn thành" color="success" size="small" sx={{fontWeight: 'bold'}} />;
+      case "rejected": return <Chip label="Đã từ chối" color="error" size="small" sx={{fontWeight: 'bold'}} />;
+      default: return <Chip label={status} size="small" />;
+    }
   };
+
+  const filteredData = historyTasks.filter(task => 
+    (task.title?.toLowerCase() || "").includes(search.toLowerCase()) || 
+    (task.address?.toLowerCase() || "").includes(search.toLowerCase())
+  );
 
   return (
     <Box sx={{ p: 3 }}>
-      {/* Page Title */}
-      <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
-        Task History
-      </Typography>
-      <Typography variant="subtitle2" sx={{ color: "#777C6D", mb: 3 }}>
-        All tasks you have updated
-      </Typography>
+      <Box sx={{mb: 4}}>
+        <Typography variant="h3" sx={{ fontWeight: 700, color: '#1e88e5' }}>
+          Lịch sử công việc
+        </Typography>
+        <Typography variant="body1" sx={{ color: "#616161", mt: 1 }}>
+          Danh sách các sự cố đã xử lý xong hoặc bị hủy bỏ.
+        </Typography>
+      </Box>
 
-      {/* Filters */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        {/* Search Bar */}
-        <Grid item xs={12} sm={8} md={4}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "#FFFFFF",
-              borderRadius: 2,
-              px: 2,
-              py: 1,
-              border: "1px solid #E0E0E0",
-            }}
-          >
-            <SearchIcon sx={{ mr: 1, color: "#777C6D" }} />
-            <InputBase
-              placeholder="Search by ID, category, location..."
-              fullWidth
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </Box>
-        </Grid>
-
-        {/* Status Filter */}
-        <Grid item xs={12} sm={4} md={2} sx={{ ml: "auto" }}>
-          <TextField
-            select
-            fullWidth
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            sx={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: 2,
-              height: "42px",
-            }}
-          >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value="completed">Completed</MenuItem>
-            <MenuItem value="in_progress">In Progress</MenuItem>
-            <MenuItem value="pending">Pending</MenuItem>
-          </TextField>
-        </Grid>
-      </Grid>
-
-      {/* History Table */}
-      <Card
-        sx={{
-          p: 3,
-          borderRadius: 3,
-          backgroundColor: "#F7F7F7",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
-        }}
-      >
-        {/* Header */}
-        <Grid
-          container
-          sx={{
-            fontWeight: 600,
-            color: "#777C6D",
-            mb: 2,
-            justifyContent: "space-around",
-          }}
-        >
-          <Grid item xs={2}>
-            Report ID
-          </Grid>
-          <Grid item xs={2}>
-            Category
-          </Grid>
-          <Grid item xs={2}>
-            Location
-          </Grid>
-          <Grid item xs={2}>
-            Status
-          </Grid>
-          <Grid item xs={2}>
-            Date
-          </Grid>
-        </Grid>
-
-        {/* Rows */}
-        {historyData.map((task, index) => (
-          <Grid
-            key={index}
-            container
-            sx={{
-              py: 2,
-              borderBottom: "1px solid #E0E0E0",
-              justifyContent: "space-around",
-            }}
-          >
-            <Grid item xs={2}>
-              {task.id}
-            </Grid>
-            <Grid item xs={2}>
-              {task.category}
-            </Grid>
-            <Grid item xs={2}>
-              {task.location}
-            </Grid>
-            <Grid item xs={2}>
-              {statusChip(task.status)}
-            </Grid>
-            <Grid item xs={2}>
-              {task.date}
-            </Grid>
-          </Grid>
-        ))}
-
-        {/* Pagination */}
-        <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
-          <Pagination count={10} variant="outlined" shape="rounded" />
+      <Card sx={{ p: 2, mb: 3, borderRadius: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", bgcolor: "#F5F5F5", borderRadius: 2, px: 2, py: 1, flexGrow: 1 }}>
+                <SearchIcon sx={{ mr: 1, color: "#757575" }} />
+                <InputBase
+                    placeholder="Tìm theo tên sự cố, địa chỉ..."
+                    fullWidth
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </Box>
         </Box>
       </Card>
+
+      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+        <Table>
+          <TableHead sx={{ bgcolor: '#F0F4F8' }}>
+            <TableRow>
+              <TableCell sx={{fontWeight: 'bold'}}>Mã sự cố</TableCell>
+              <TableCell sx={{fontWeight: 'bold'}}>Sự cố</TableCell>
+              <TableCell sx={{fontWeight: 'bold'}}>Địa điểm</TableCell>
+              <TableCell sx={{fontWeight: 'bold'}}>Trạng thái kết thúc</TableCell>
+              <TableCell sx={{fontWeight: 'bold'}}>Thời gian</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading ? (
+                <TableRow><TableCell colSpan={5} align="center"><CircularProgress/></TableCell></TableRow>
+            ) : filteredData.length === 0 ? (
+                <TableRow><TableCell colSpan={5} align="center">Chưa có lịch sử nào.</TableCell></TableRow>
+            ) : (
+                filteredData.map((task) => (
+                <TableRow key={task._id} hover>
+                    <TableCell sx={{fontFamily: 'monospace', color: '#1976d2'}}>
+                        {task._id ? task._id.substring(0,8) : 'N/A'}...
+                    </TableCell>
+                    <TableCell>
+                        <Typography variant="body2" fontWeight="bold">{task.title}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            {task.type_id?.name || task.incidentType || "Chưa phân loại"}
+                        </Typography>
+                    </TableCell>
+                    <TableCell>{task.address}</TableCell>
+                    <TableCell>{getStatusChip(task.status)}</TableCell>
+                    <TableCell>
+                        {new Date(task.updated_at || task.created_at).toLocaleDateString('vi-VN')}
+                        <Typography variant="caption" display="block" color="text.secondary">
+                             {new Date(task.updated_at || task.created_at).toLocaleTimeString('vi-VN')}
+                        </Typography>
+                    </TableCell>
+                </TableRow>
+                ))
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 }
