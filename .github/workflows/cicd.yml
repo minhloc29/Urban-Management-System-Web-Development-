@@ -33,6 +33,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Debug Paths
+        run: |
+          echo "PWD=$(pwd)"
+          echo "Repo root:"
+          ls -al $GITHUB_WORKSPACE
+          echo "Backend:"
+          ls -al ./
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
