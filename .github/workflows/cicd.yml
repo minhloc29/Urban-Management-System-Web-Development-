@@ -41,7 +41,7 @@ jobs:
           cache-dependency-path: package-lock.json   # <--- relative to working-directory
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run Tests
         run: npm test --if-present
