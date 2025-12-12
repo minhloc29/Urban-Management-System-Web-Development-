@@ -1,7 +1,6 @@
 import React from "react";
 import "../../assets/scss/landing.scss";
 
-import Navbar from "./Navbar";
 import Hero from "./Hero";
 import Features from "./Features";
 import CityData from "./CityData";
@@ -11,6 +10,7 @@ import Footer from "./Footer";
 import UsersReview from "./UserReview";
 import Intro from "./Intro";
 import Team from "./Team";
+import Navbar from "./Navbar";
 
 export default function LandingPage() {
   return (
