@@ -10,7 +10,7 @@ import Footer from "./Footer";
 import UsersReview from "./UserReview";
 import Intro from "./Intro";
 import Team from "./Team";
-import Navbar from "./Navbar";
+import Navbar from "./NavBar";
 
 export default function LandingPage() {
   return (
