@@ -4,7 +4,7 @@ const incidentController = require('../controllers/incidentController');
 const upload = require('../middleware/uploadMiddleware'); // Import multer
 const authMiddleware = require('../middleware/authMiddleware');
 
-
+router.get('/my-reports', authMiddleware, incidentController.getMyIncidents);
 router.get('/public', incidentController.getPublicIncidents);
 
 router.post('/', 
