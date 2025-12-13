@@ -50,7 +50,7 @@ export default function MyReportsPage() {
   useEffect(() => {
     const fetchFromDB = async () => {
       try {
-        const res = await apiGet("/api/user/incidents/public");
+        const res = await apiGet("/api/user/incidents/my-reports");
 
         if (res.success) {
           setReports(res.data);
