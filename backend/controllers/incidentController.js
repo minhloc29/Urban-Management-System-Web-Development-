@@ -78,3 +78,27 @@ exports.getPublicIncidents = async (req, res) => {
     });
   }
 };
+
+exports.getMyIncidents = async (req, res) => {
+  try {
+    // 1. Lấy ID của User từ Token (do Auth Middleware giải mã)
+    const userId = req.user._id; 
+
+    console.log(`👤 User ${userId} đang xem lịch sử báo cáo.`);
+
+    // 2. Tìm trong DB những sự cố do User này tạo (reporter_id trùng khớp)
+    const incidents = await Incident.find({ reporter_id: userId })
+      .populate('type_id', 'name') // Lấy tên loại sự cố
+      .sort({ created_at: -1 });   // Sắp xếp mới nhất lên đầu
+
+    res.status(200).json({
+      success: true,
+      count: incidents.length,
+      data: incidents
+    });
+
+  } catch (error) {
+    console.error("❌ Lỗi getMyIncidents:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
