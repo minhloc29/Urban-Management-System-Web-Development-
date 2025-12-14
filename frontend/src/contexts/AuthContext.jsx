@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios'; // Import thư viện axios
+import axios from 'axios'; 
 
 const AuthContext = createContext(null);
 
@@ -8,75 +8,76 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const clearAuthData = () => {
+    setUser(null);
+    setRole(null);
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
+    delete axios.defaults.headers.common['Authorization'];
+  };
+
   useEffect(() => {
     const verifyTokenAndLoadUser = async () => {
-      const token = localStorage.getItem('userToken'); // Lấy token từ localStorage
+      const token = localStorage.getItem('userToken'); 
+      const storedUser = localStorage.getItem('user');
 
-      if (token) {
+      // Kiểm tra kỹ token có phải undefined string không
+      if (token && token !== "undefined" && token !== "null") {
         try {
-          // --- GỌI API XÁC MINH TOKEN VỚI BACKEND ---
-          // Gửi token trong header Authorization cho mỗi request xác thực
-          const response = await axios.get('http://localhost:5000/api/auth/me', {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          
-          // Nếu API xác minh thành công:
-          const userData = response.data;
-          setUser(userData);
-          setRole(userData.role);
-          
-          // Cài đặt token mặc định cho các request axios sau này
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
+          // Nếu có user lưu trong local rồi thì load lên luôn cho nhanh (Optimistic UI)
+          if (storedUser && storedUser !== "undefined") {
+             const parsedUser = JSON.parse(storedUser);
+             setUser(parsedUser);
+             setRole(parsedUser.role);
+          }
+
+          // Gọi API verify lại cho chắc
+          //const response = await axios.get('http://localhost:5000/api/auth/me');
+          //setUser(response.data);
+          //setRole(response.data.role);
+          console.log("✅ Token verified via LocalStorage.");
+
         } catch (error) {
-          // Nếu token không hợp lệ, hết hạn, hoặc backend báo lỗi 401/403:
-          console.error("Token invalid or expired. Logging out automatically.");
-          
-          // Xóa sạch dữ liệu cũ
-          localStorage.removeItem('userToken');
-          localStorage.removeItem('user');
-          localStorage.removeItem('role');
-          
-          // Reset state
-          setUser(null);
-          setRole(null);
-          // Xóa header mặc định nếu có
-          delete axios.defaults.headers.common['Authorization'];
+          console.error("Token invalid. Logging out.");
+          clearAuthData();
         }
+      } else {
+          // Nếu token rác thì xóa đi
+          if (token) clearAuthData();
       }
       
-      // Kết thúc trạng thái loading CHỈ sau khi quá trình kiểm tra hoàn tất
       setLoading(false); 
     };
 
     verifyTokenAndLoadUser();
-  }, []); // [] đảm bảo chỉ chạy 1 lần khi app load
+  }, []); 
 
   const login = (userData, token) => {
-    // Lưu token và user vào state và localStorage
+    // --- KIỂM TRA AN TOÀN ---
+    if (!token || typeof token !== 'string') {
+        console.error("❌ Login Error: Token không hợp lệ!", token);
+        return;
+    }
+    // ------------------------
+
     setUser(userData);
     setRole(userData.role);
+    
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('role', userData.role);
-    localStorage.setItem('userToken', token); // LƯU TOKEN VÀO ĐÂY
+    localStorage.setItem('userToken', token); 
 
-    // Cài đặt token mặc định cho axios
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    console.log("✅ Đăng nhập và lưu Token thành công!");
   };
 
   const logout = () => {
-    setUser(null);
-    setRole(null);
+    clearAuthData();
     setLoading(false);
-
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
-    localStorage.removeItem('userToken');
-    
-    // Xóa header mặc định
-    delete axios.defaults.headers.common['Authorization'];
+    window.location.href = '/login'; // Force reload về trang login
   };
 
   return (
