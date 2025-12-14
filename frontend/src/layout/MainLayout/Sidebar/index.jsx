@@ -7,7 +7,6 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import MiniDrawerStyled from '../MiniDrawerStyled';
 // project imports
-import MenuCard from './MenuCard';
 import MenuList from '../MenuList';
 import LogoSection from '../LogoSection';
 
@@ -41,7 +40,6 @@ function Sidebar() {
   const drawer = useMemo(() => {
     const drawerContent = (
       <>
-        <MenuCard />
         <Stack direction="row" sx={{ justifyContent: 'center', mb: 2 }}>
           <Chip label={import.meta.env.VITE_APP_VERSION} size="small" color="default" />
         </Stack>

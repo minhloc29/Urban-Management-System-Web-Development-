@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import { Box } from "@mui/material";
-import TaskTable from "ui-component/extended/TaskTable";
 import TaskMap from "ui-component/extended/TaskMap";
 import AssignedTasksCard from "./cards/AssignedTasksCard";
 import InProgressTasksCard from "./cards/InProgressTasksCard";
@@ -37,11 +36,7 @@ export default function EngineerDashboard() {
         </Grid>
       </Grid>
 
-      {/* TASK TABLE */}
-      <Grid item xs={12}>
-        <TaskTable />
-      </Grid>
-
+      
       {/* MAP VIEW */}
       <Grid item xs={12}>
         <TaskMap />

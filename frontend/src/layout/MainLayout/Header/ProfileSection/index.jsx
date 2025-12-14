@@ -107,6 +107,9 @@ export default function ProfileSection() {
         aria-label="user-account"
       />
       <Popper
+      sx={{
+        zIndex: theme.zIndex.modal + 1
+      }}
         placement="bottom"
         open={open}
         anchorEl={anchorRef.current}
@@ -126,6 +129,7 @@ export default function ProfileSection() {
           <ClickAwayListener onClickAway={handleClose}>
             <Transitions in={open} {...TransitionProps}>
               <Paper>
+                
                 {open && (
                   <MainCard border={false} elevation={16} content={false} boxShadow shadow={theme.shadows[16]}>
                     <Box sx={{ p: 2, pb: 0 }}>

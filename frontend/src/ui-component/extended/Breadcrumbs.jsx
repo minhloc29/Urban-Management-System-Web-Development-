@@ -12,7 +12,8 @@ import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import Box from '@mui/material/Box';
 
 // project imports
-import navigation from 'menu-items';
+import { getMenuByRole } from 'menu-items';
+
 
 // assets
 import { IconChevronRight, IconTallymark1 } from '@tabler/icons-react';
@@ -71,7 +72,7 @@ export default function Breadcrumbs({
   let customLocation = location.pathname;
 
   useEffect(() => {
-    navigation?.items?.map((menu) => {
+    getMenuByRole?.items?.map((menu) => {
       if (menu.type && menu.type === 'group') {
         if (menu?.url && menu.url === customLocation) {
           setMain(menu);

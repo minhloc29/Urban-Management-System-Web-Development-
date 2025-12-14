@@ -51,15 +51,12 @@ export default function Header() {
         </Avatar>
       </Box>
 
-      {/* header search */}
-      <SearchSection />
+      
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
 
-      {/* notification */}
-      <NotificationSection />
+  
 
-      {/* profile */}
       <ProfileSection />
     </>
   );

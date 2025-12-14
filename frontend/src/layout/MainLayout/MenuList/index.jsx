@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo, useState, useMemo } from 'react';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
@@ -7,9 +7,10 @@ import Box from '@mui/material/Box';
 // project imports
 import NavItem from './NavItem';
 import NavGroup from './NavGroup';
-import menuItems from 'menu-items';
 
 import { useGetMenuMaster } from 'api/menu';
+import { useAuth } from 'contexts/AuthContext';
+import { getMenuByRole } from 'menu-items';
 
 // ==============================|| SIDEBAR MENU LIST ||============================== //
 
@@ -17,7 +18,15 @@ function MenuList() {
   const { menuMaster } = useGetMenuMaster();
   const drawerOpen = menuMaster.isDashboardDrawerOpened;
 
+  const { role } = useAuth(); 
   const [selectedID, setSelectedID] = useState('');
+
+  const menuItems = useMemo(() => {
+    return getMenuByRole(role);
+  }, [role]);
+
+  if (!menuItems?.items?.length) return null;
+
 
   const lastItem = null;
 

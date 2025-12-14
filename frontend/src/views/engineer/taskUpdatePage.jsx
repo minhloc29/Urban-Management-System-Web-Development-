@@ -125,7 +125,6 @@ export default function TaskUpdatePage() {
       );
   }
 
-  // Nếu loading xong và taskFound là true, render giao diện chính
   return (
     <Box sx={{ p: 3 }}>
       {/* Phần JSX giao diện chính của bạn giữ nguyên */}

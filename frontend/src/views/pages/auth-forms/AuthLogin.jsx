@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'contexts/AuthContext';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -32,17 +33,16 @@ export default function AuthLogin() {
   const [checked, setChecked] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
 
-  // ✅ Form state
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
 
-  // ✅ Password toggle
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
 
-  // ✅ Form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -63,10 +63,8 @@ export default function AuthLogin() {
       if (response.ok) {
         console.log('✅ Login success:', data);
         const { token, user } = data;
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('role', user.role);
         
-        localStorage.setItem('user', JSON.stringify(user));
+        login({ ...user, token });
         
         if (user.role === 'authority') navigate('/admin/dashboard');
         else if (user.role === 'technician') navigate('/engineer/dashboard');

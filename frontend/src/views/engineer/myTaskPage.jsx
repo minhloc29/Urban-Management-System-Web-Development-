@@ -150,38 +150,7 @@ export default function TechnicianMyTasksPage() {
         </Typography>
       </Box>
 
-      {/* Toolbar */}
-      <Card sx={{ p: 2, mb: 3, borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
-            <Box sx={{ display: "flex", alignItems: "center", backgroundColor: "#F5F5F5", borderRadius: 2, px: 2, py: 1, flexGrow: 1, minWidth: '250px' }}>
-                <SearchIcon sx={{ mr: 1, color: "#757575" }} />
-                <InputBase
-                    placeholder="Tìm kiếm theo mã, tiêu đề, địa chỉ..."
-                    fullWidth
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </Box>
-
-            <TextField
-                select
-                size="small"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                sx={{ minWidth: 150, backgroundColor: '#fff' }}
-                InputProps={{ startAdornment: <FilterListIcon fontSize="small" sx={{mr: 1, color: '#757575'}} /> }}
-            >
-                <MenuItem value="all">Tất cả trạng thái</MenuItem>
-                <MenuItem value="assigned">Mới phân công</MenuItem>
-                <MenuItem value="in_progress">Đang xử lý</MenuItem>
-                <MenuItem value="completed">Đã hoàn thành</MenuItem>
-            </TextField>
-            
-            <Button onClick={fetchTasks} variant="outlined" sx={{height: 40}}>
-                Làm mới
-            </Button>
-        </Box>
-      </Card>
+      
 
       {error && <Alert severity="error" sx={{mb: 3}}>{error}</Alert>}
 
@@ -196,8 +165,19 @@ export default function TechnicianMyTasksPage() {
                 <Typography color="text.secondary">Không tìm thấy công việc nào phù hợp.</Typography>
             </Box>
         ) : (
-            <Table sx={{ minWidth: 650 }} aria-label="task table">
-            <TableHead sx={{ backgroundColor: '#F0F4F8' }}>
+            <Table stickyHeader sx={{
+            '& .MuiTableCell-stickyHeader': {
+              backgroundColor: '#0f1720 !important',
+              color: '#bdbdbd !important',
+              fontWeight: 700,
+              position: 'sticky',
+              top: 0,
+              zIndex: 5,
+              backgroundClip: 'padding-box',
+              opacity: 1,
+            }
+          }}>
+            <TableHead>
                 <TableRow>
                 <TableCell sx={{ fontWeight: 'bold', color: '#455a64' }}>Mã công việc</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: '#455a64' }}>Sự cố</TableCell>

@@ -2,44 +2,83 @@ import React from "react";
 import { Card, CardContent, Typography, Skeleton, Box } from "@mui/material";
 import BuildCircleIcon from "@mui/icons-material/BuildCircle";
 
-export default function InProgressTasksCard({ isLoading }) {
+export default function InProgressTasksCard({ isLoading, count = 5, today = 2 }) {
   return (
     <Card
       sx={{
         height: "100%",
-        background: "linear-gradient(135deg, #FFF3E0, #FFB74D)",
-        color: "#4E342E",
-        boxShadow: 2,
-        borderRadius: 2,
+        background: "linear-gradient(135deg, #0B1220 0%, #111827 100%)",
+        borderRadius: 3,
+        border: "1px solid rgba(255,255,255,0.08)",
+        boxShadow: `
+          0 16px 40px rgba(0,0,0,0.7),
+          inset 0 1px 0 rgba(255,255,255,0.05)
+        `,
+        color: "#E5E7EB",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          boxShadow: "0 24px 60px rgba(0,0,0,0.85)"
+        }
       }}
     >
       <CardContent>
         {isLoading ? (
-          <Skeleton variant="rectangular" height={80} />
+          <Skeleton
+            variant="rectangular"
+            height={80}
+            sx={{ bgcolor: "rgba(255,255,255,0.08)" }}
+          />
         ) : (
           <Box>
-            <Box display="flex" alignItems="center" gap={1} mb={1}>
-              <BuildCircleIcon sx={{ fontSize: 32, color: "#E65100" }} />
-              <Typography variant="h6" fontWeight="bold">
+            {/* Title */}
+            <Box display="flex" alignItems="center" gap={1.2} mb={1}>
+              <BuildCircleIcon
+                sx={{
+                  fontSize: 28,
+                  color: "#FBBF24" // amber
+                }}
+              />
+              <Typography
+                variant="subtitle1"
+                sx={{ color: "#FCD34D", fontWeight: 500 }}
+              >
                 Đang xử lý
               </Typography>
             </Box>
 
-            <Typography variant="h3" fontWeight="bold">
-              5
+            {/* KPI */}
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: 700,
+                lineHeight: 1.1,
+                background: "linear-gradient(135deg, #FEF3C7, #FBBF24)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent"
+              }}
+            >
+              {count}
             </Typography>
 
-            <Typography variant="body2" color="text.secondary">
+            {/* Description */}
+            <Typography
+              variant="body2"
+              sx={{ color: "rgba(255,255,255,0.6)", mt: 0.5 }}
+            >
               Sự cố đang được đội kỹ thuật tiến hành
             </Typography>
 
+            {/* Trend */}
             <Typography
               variant="caption"
-              display="block"
-              color="#6D4C41"
-              sx={{ mt: 1 }}
+              sx={{
+                mt: 1,
+                display: "block",
+                fontWeight: 500,
+                color: "#FBBF24"
+              }}
             >
-              +2 hôm nay
+              +{today} hôm nay
             </Typography>
           </Box>
         )}

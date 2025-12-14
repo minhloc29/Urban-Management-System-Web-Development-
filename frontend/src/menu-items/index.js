@@ -2,23 +2,15 @@ import adminMenu from './admin';
 import managerMenu from './engineer';
 import accountantMenu from './user';
 
-const role = localStorage.getItem('role'); // or from your AuthContext
-
-let menuToExport;
-
-switch (role) {
-  case 'authority':
-    menuToExport = adminMenu;
-    break;
-  case 'technician':
-    menuToExport = managerMenu;
-    break;
-  case 'citizen':
-    menuToExport = accountantMenu;
-    break;
-  default:
-    console.log("Do not match any role!")
-    menuToExport = adminMenu;
+export function getMenuByRole(role) {
+  switch (role) {
+    case 'authority':
+      return adminMenu;
+    case 'technician':
+      return managerMenu;
+    case 'citizen':
+      return accountantMenu;
+    default:
+      return { items: [] };
+  }
 }
-
-export default menuToExport;

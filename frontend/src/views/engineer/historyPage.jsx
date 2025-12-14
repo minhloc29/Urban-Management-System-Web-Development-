@@ -62,23 +62,22 @@ export default function TechnicianHistoryPage() {
         </Typography>
       </Box>
 
-      <Card sx={{ p: 2, mb: 3, borderRadius: 2 }}>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", bgcolor: "#F5F5F5", borderRadius: 2, px: 2, py: 1, flexGrow: 1 }}>
-                <SearchIcon sx={{ mr: 1, color: "#757575" }} />
-                <InputBase
-                    placeholder="Tìm theo tên sự cố, địa chỉ..."
-                    fullWidth
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </Box>
-        </Box>
-      </Card>
+      
 
       <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
-        <Table>
-          <TableHead sx={{ bgcolor: '#F0F4F8' }}>
+        <Table stickyHeader sx={{
+            '& .MuiTableCell-stickyHeader': {
+              backgroundColor: '#0f1720 !important',
+              color: '#bdbdbd !important',
+              fontWeight: 700,
+              position: 'sticky',
+              top: 0,
+              zIndex: 5,
+              backgroundClip: 'padding-box',
+              opacity: 1,
+            }
+          }}>
+          <TableHead>
             <TableRow>
               <TableCell sx={{fontWeight: 'bold'}}>Mã sự cố</TableCell>
               <TableCell sx={{fontWeight: 'bold'}}>Sự cố</TableCell>
