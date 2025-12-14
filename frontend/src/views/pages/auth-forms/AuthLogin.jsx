@@ -1,9 +1,7 @@
-
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from 'contexts/AuthContext';
+import { useAuth } from 'contexts/AuthContext'; // Đảm bảo đường dẫn import đúng
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -47,7 +45,8 @@ export default function AuthLogin() {
     e.preventDefault();
 
     try {
-      // 👇 Make sure this URL matches your backend port (5000 if using Express)
+      // 👇 Sửa lại URL cho đúng với biến môi trường nếu cần
+      // const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: {
@@ -56,25 +55,28 @@ export default function AuthLogin() {
         body: JSON.stringify(formData)
       });
 
-      console.log(response)
-
       const data = await response.json();
       
       if (response.ok) {
         console.log('✅ Login success:', data);
         const { token, user } = data;
         
-        login({ ...user, token });
+        // --- SỬA QUAN TRỌNG TẠI ĐÂY ---
+        // Truyền tách biệt 2 tham số: (userData, token) để khớp với AuthContext
+        login(user, token); 
+        // ------------------------------
         
         if (user.role === 'authority') navigate('/admin/dashboard');
-        else if (user.role === 'technician') navigate('/engineer/dashboard');
+        else if (user.role === 'technician') navigate('/engineer/my_task'); // Sửa lại đường dẫn dashboard engineer cho chuẩn
         else navigate('/user/home');
 
       } else {
         console.error('❌ Login failed:', data.message || data.error);
+        alert(data.message || 'Đăng nhập thất bại');
       }
     } catch (err) {
       console.error('⚠️ Error connecting to backend:', err);
+      alert('Lỗi kết nối Server');
     }
   };
 
@@ -84,7 +86,7 @@ export default function AuthLogin() {
         <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
         <OutlinedInput
           id="outlined-adornment-email-login"
-          type="email"
+          type="text" // Để text cho phép nhập username
           name="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -143,4 +145,3 @@ export default function AuthLogin() {
     </form>
   );
 }
-
