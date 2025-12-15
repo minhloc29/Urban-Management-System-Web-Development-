@@ -31,3 +31,28 @@
     transform: translateY(-40px);
   }
 }
+
+/* =========================================
+   RESPONSIVE AUTH BACKGROUND
+   Paste vào cuối file authentication.scss
+   ========================================= */
+
+@media screen and (max-width: 768px) {
+  .shape-neon-1,
+  .shape-neon-2 {
+    /* Thu nhỏ các khối neon background trên mobile */
+    width: 200px;
+    height: 200px;
+    filter: blur(80px); /* Giảm độ nhòe để đỡ nặng máy */
+  }
+
+  .shape-neon-1 {
+    top: -50px;
+    left: -50px;
+  }
+
+  .shape-neon-2 {
+    bottom: -50px;
+    right: -50px;
+  }
+}

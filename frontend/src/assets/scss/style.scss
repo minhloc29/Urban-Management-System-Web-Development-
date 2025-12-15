@@ -228,3 +228,30 @@ h4 {
     transform: translateY(-6px);
   }
 }
+
+/* =========================================
+   RESPONSIVE DASHBOARD FIXES
+   Paste vào cuối file style.scss
+   ========================================= */
+
+@media screen and (max-width: 768px) {
+  /* Giảm lề chung của Dashboard trên mobile */
+  .dashboard-container {
+    padding: 20px 16px !important; 
+  }
+
+  /* Font chữ tiêu đề nhỏ lại chút */
+  .dashboard-title {
+    font-size: 1.8rem;
+  }
+
+  /* Table: Đảm bảo bảng không bị vỡ (kết hợp với Box scroll bên React) */
+  .table {
+    min-width: 600px; /* Đặt chiều rộng tối thiểu để kích hoạt thanh cuộn ngang */
+  }
+
+  /* ApexCharts: Ẩn bớt các tool menu nhỏ trên biểu đồ để đỡ rối */
+  .apexcharts-toolbar {
+    display: none !important; 
+  }
+}

@@ -93,7 +93,7 @@ export default function TaskUpdatePage() {
         images.forEach((file) => { formData.append('images', file); });
 
         // Tạm thời bỏ comment dòng gọi API thật khi backend đã sẵn sàng
-        await apiPost(`/api/user/incidents/${id}/update`, formData);
+        await apiPost(`/api/engineer/${id}/update`, formData);
 
         console.log("Submit giả lập thành công:", { status, notes, images });
         alert("Cập nhật thành công!");

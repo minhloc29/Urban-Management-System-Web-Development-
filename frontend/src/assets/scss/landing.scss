@@ -551,3 +551,177 @@
     }
   }
 }
+
+/* ============================================================================
+   PHẦN BỔ SUNG RESPONSIVE (DÁN VÀO CUỐI FILE LANDING.SCSS CỦA BẠN)
+   Nguyên tắc: Không đụng vào CSS desktop ở trên.
+   ============================================================================ */
+
+/* 1. Mặc định ẨN các thành phần Mobile trên Desktop */
+.nav__toggle {
+  display: none; /* Ẩn nút 3 gạch trên PC */
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding-left: 15px;
+}
+
+.nav__mobile-menu {
+  display: none; /* Ẩn menu thả xuống trên PC */
+}
+
+/* ============================================================================
+   2. RESPONSIVE MOBILE & TABLET
+   (Fix lỗi chồng chữ và vỡ giao diện)
+   ============================================================================ */
+
+/* Kích hoạt giao diện Mobile sớm hơn (1100px) để tránh menu bị dính vào logo */
+@media screen and (max-width: 1100px) {
+
+  /* --- A. NAVBAR --- */
+  .nav {
+    padding: 1rem 1.5rem; /* Giảm padding */
+
+    &__container {
+      padding: 0; /* Xóa padding thừa */
+    }
+
+    /* Ẩn Menu giữa và Nút Desktop ngay lập tức */
+    &__center, 
+    .desktop-only,
+    .nav__cta { /* Ẩn luôn nút CTA desktop nếu chưa có class desktop-only */
+      display: none !important;
+    }
+
+    /* Hiện nút 3 gạch */
+    &__toggle {
+      display: block;
+      padding-left: 0; /* Reset padding */
+    }
+
+    /* Reset Flex để Logo và Toggle dãn ra 2 đầu */
+    &__left { flex: unset; }
+    &__right { flex: unset; }
+
+    /* MENU DROPDOWN */
+    &__mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: rgba(12, 15, 38, 0.98);
+      backdrop-filter: blur(20px);
+      position: absolute;
+      top: 100%; left: 0; width: 100%;
+      padding: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      text-align: center;
+      gap: 20px;
+      
+      &.open {
+        display: flex;
+        animation: slideDown 0.3s ease forwards;
+      }
+
+      a {
+        font-size: 1.2rem;
+        color: #e2e8f0;
+        text-decoration: none;
+        padding: 12px;
+        display: block;
+        border-radius: 8px;
+        &:active { background: rgba(255,255,255,0.05); }
+      }
+
+      .mobile-cta {
+        margin-top: 10px;
+        background: linear-gradient(135deg, #38bdf8, #818cf8);
+        color: #000;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 14px;
+        display: block;
+        text-decoration: none;
+      }
+    }
+  }
+
+  /* --- B. TYPOGRAPHY & SPACING (FIX LỖI CHỒNG CHỮ) --- */
+  
+  /* Giảm Padding chung cho tất cả Section */
+  .hero, .features, .intro, .city-data, .usecases, .team, .reviews, .cta, .footer {
+    padding: 60px 20px !important; /* Quan trọng: Giảm lề 2 bên xuống 20px */
+  }
+
+  /* Hero Text */
+  .hero__content--center {
+    padding: 0 10px;
+    h1 { 
+      font-size: 2.4rem; /* Giảm từ 3.8rem xuống */
+      line-height: 1.2; 
+      margin-bottom: 15px;
+    }
+    p { font-size: 1rem; margin-bottom: 20px; }
+  }
+
+  /* Section Titles (h2) */
+  .features h2, .city-data__content h2, .usecases h2, .team h2, .reviews h2, .cta h2 {
+    font-size: 1.8rem; /* Giảm từ 2.6rem xuống để không bị vỡ */
+    margin-bottom: 30px;
+    line-height: 1.3;
+  }
+
+  /* --- C. GRID SYSTEMS (1 CỘT) --- */
+  
+  .features__grid, 
+  .team__grid, 
+  .reviews__grid {
+    grid-template-columns: 1fr; /* Xếp dọc 1 cột */
+    gap: 20px;
+  }
+
+  .usecases__grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 cột nhỏ */
+    gap: 15px;
+  }
+
+  /* Intro & City Data (Ảnh trên Chữ dưới hoặc ngược lại) */
+  .intro, .city-data {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    gap: 40px;
+  }
+  
+  /* Đảm bảo ảnh/chart không bị méo */
+  .intro__visual, .city-data__visual, .city-data__chart {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .intro__visual img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .city-data__chart, .holo-card {
+    height: 300px; /* Chiều cao cố định cho chart trên mobile */
+  }
+
+  /* Footer */
+  .footer {
+    flex-direction: column;
+    gap: 2rem;
+    .footer__links {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

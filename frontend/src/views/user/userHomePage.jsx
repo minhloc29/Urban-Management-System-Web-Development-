@@ -91,43 +91,50 @@ export default function UserHomePage() {
     <Box
       sx={{
         position: "relative",
-        padding: "40px",
+        // RESPONSIVE UPDATE: Mobile padding 2 (16px), Desktop padding 5 (40px)
+        p: { xs: 2, md: 5 }, 
         minHeight: "100vh",
         color: "white",
-        overflow: "hidden"
+        overflowX: "hidden" // Ngăn cuộn ngang trên mobile
       }}
     >
+      {/* Background Blobs - Thu nhỏ trên mobile để đỡ rối */}
       <Box
         sx={{
           position: "absolute",
-          width: 350,
-          height: 350,
+          width: { xs: 200, md: 350 }, // Mobile nhỏ hơn
+          height: { xs: 200, md: 350 },
           borderRadius: "50%",
           background: "rgba(56,189,248,0.15)",
           filter: "blur(120px)",
           top: 60,
-          left: -80
+          left: -80,
+          zIndex: 0
         }}
       />
       <Box
         sx={{
           position: "absolute",
-          width: 300,
-          height: 300,
+          width: { xs: 150, md: 300 },
+          height: { xs: 150, md: 300 },
           borderRadius: "50%",
           background: "rgba(129,140,248,0.18)",
           filter: "blur(140px)",
           bottom: 80,
-          right: -40
+          right: -40,
+          zIndex: 0
         }}
       />
 
-      <Grid container sx={{ justifyContent: "space-around" }}>
-        <Grid item xs={6}>
+      {/* Grid container chính */}
+      <Grid container spacing={3} sx={{ position: "relative", zIndex: 1 }}>
+        {/* RESPONSIVE UPDATE: xs=12 (full dòng mobile), md=7 (7 phần desktop) */}
+        <Grid item xs={12} md={7}>
           <UserIntroCard username={userInfo.fullName} />
         </Grid>
 
-        <Grid item xs="auto">
+        {/* RESPONSIVE UPDATE: xs=12 (full dòng mobile), md=5 */}
+        <Grid item xs={12} md={5}>
           <UserProfileCard
             name={userInfo.fullName}
             role={userInfo.role}
@@ -136,10 +143,11 @@ export default function UserHomePage() {
         </Grid>
       </Grid>
 
+      {/* Feature Cards */}
       <Grid
         container
         spacing={3}
-        sx={{ mt: 5, justifyContent: "space-around" }}
+        sx={{ mt: { xs: 2, md: 5 }, position: "relative", zIndex: 1 }}
       >
         <FeatureCard
           icon={<ReportProblemIcon sx={{ fontSize: 42 }} />}
@@ -164,7 +172,7 @@ export default function UserHomePage() {
         />
       </Grid>
 
-      <Box sx={{ mt: 4 }}>
+      <Box sx={{ mt: 4, position: "relative", zIndex: 1 }}>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <CircularProgress sx={{ color: "white" }} />
@@ -179,11 +187,12 @@ export default function UserHomePage() {
 
 function FeatureCard({ icon, title, desc, color, href }) {
   return (
-    <Grid item xs={12} md={4}>
+    // RESPONSIVE UPDATE: xs=12 (1 cột trên mobile), sm=6 (2 cột tablet), md=4 (3 cột desktop)
+    <Grid item xs={12} sm={6} md={4}>
       <Card
         onClick={() => (window.location.href = href)}
         sx={{
-          p: 4,
+          p: 3,
           height: "100%",
           borderRadius: "20px",
           background: "rgba(255,255,255,0.05)",
