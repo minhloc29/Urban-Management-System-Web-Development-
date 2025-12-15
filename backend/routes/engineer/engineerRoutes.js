@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const engineerController = require('../../controllers/engineerController');
+const engineerController = require('../../controllers/engineer/engineerController');
 const upload = require('../../middleware/uploadMiddleware'); // Import multer
 const authMiddleware = require('../../middleware/authMiddleware');
 

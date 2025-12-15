@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const engineerController = require('../../controllers/adminEngineerController');
+const engineerController = require('../../controllers/admin/adminEngineerController');
 const authMiddleware = require('../../middleware/authMiddleware');
 
 router.get('/', engineerController.getEngineers);
