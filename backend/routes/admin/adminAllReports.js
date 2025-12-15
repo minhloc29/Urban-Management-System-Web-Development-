@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const adminAllReport = require('../../controllers/adminAllReport');
+const adminAllReport = require('../../controllers/admin/adminAllReport');
 
 router.get('/', adminAllReport.getAllReports);
 

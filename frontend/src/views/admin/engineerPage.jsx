@@ -19,6 +19,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import { apiGet, apiPost } from "../../utils/api";
 import AddEngineer from "./addEngineer";
+import StatusChip from "../../ui-component/admin/StatusChip";
 
 export default function EngineersPage() {
   const [search, setSearch] = useState("");

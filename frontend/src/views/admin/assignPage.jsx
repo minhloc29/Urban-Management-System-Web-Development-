@@ -58,7 +58,7 @@ export default function AssignCustomerPage() {
           sort: so || ''
         });
 
-        const response = await apiGet(`/api/admin/assign/incidents`, params);
+        const response = await apiGet(`/api/admin/assign/incidents?${params.toString()}`);
         
         console.log("Check all incidents: ", response)
         if (response.success) {

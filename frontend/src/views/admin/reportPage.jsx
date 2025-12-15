@@ -41,7 +41,7 @@ export default function ReportsPage() {
         sort: sort || "",
       });
 
-      const response = await apiGet("/api/admin/reports", params);
+      const response = await apiGet(`/api/admin/reports?${params.toString()}`);
       
       console.log(response)
       
@@ -199,7 +199,13 @@ export default function ReportsPage() {
 
   {/* Pagination */}
   <Box sx={{ mt: 3, display: "flex", justifyContent: "center", py: 2 }}>
-    <Pagination count={10} variant="outlined" shape="rounded" />
+    <Pagination
+      count={totalPages}        // from backend
+      page={page}               // controlled
+      onChange={(e, value) => setPage(value)}
+      variant="outlined"
+      shape="rounded"
+    />
   </Box>
 </Card>
     </Box>

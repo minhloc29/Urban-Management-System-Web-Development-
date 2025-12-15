@@ -12,7 +12,6 @@ import axios from "axios";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import RecentReportsCard from "./card/RecentReportsCard";
 import UserIntroCard from "./card/UserIntroCard";
 import UserProfileCard from "./card/UserProfileCard";
 
@@ -163,16 +162,6 @@ export default function UserHomePage() {
           href="/user/my-reports"
         />
       </Grid>
-
-      <Box sx={{ mt: 4 }}>
-        {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <CircularProgress sx={{ color: "white" }} />
-          </Box>
-        ) : (
-          <RecentReportsCard reports={reports} />
-        )}
-      </Box>
     </Box>
   );
 }
