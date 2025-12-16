@@ -86,15 +86,7 @@ export const SocketProvider = ({ children }) => {
     };
   }, [token, user?.id]);
 
-  /* =====================================================
-     NOTIFICATION HANDLERS
-     ===================================================== */
-
-  /**
-   * ✅ ADD NOTIFICATION (SAFE VERSION)
-   * - Không trùng
-   * - Không mất khi reconnect
-   */
+  
   const handleNotification = (data) => {
     setNotifications((prev) => {
       // 🔒 Prevent duplicate notification

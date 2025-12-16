@@ -14,6 +14,8 @@ import {
   TableCell,
   TableHead,
   TableBody,
+  useMediaQuery,
+  useTheme,
   Chip
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -22,6 +24,9 @@ import AddEngineer from "./addEngineer";
 import StatusChip from "../../ui-component/admin/StatusChip";
 
 export default function ReportsPage() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [sort, setSort] = useState("newest");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -64,6 +69,39 @@ export default function ReportsPage() {
     fetchReports();
   }, [page, sort, search]);
 
+  const MobileReportCard = ({ row }) => (
+    <Card sx={{ mb: 2, p: 2, borderRadius: 3, border: '1px solid #444', bgcolor: '#1e2129' }}>
+      <Box display="flex" justifyContent="space-between" mb={1}>
+        <StatusChip status={row.status} />
+        <Typography variant="caption" color="#aaa">{new Date(row.created_at).toLocaleDateString()}</Typography>
+      </Box>
+      <Typography variant="h6" color="#fff" fontWeight="bold" gutterBottom>{row.type_id.name}</Typography>
+
+      <Box display="flex" gap={1} alignItems="center" mb={1} color="#ccc">
+         <LocationOnIcon fontSize="small" sx={{ color: '#555' }} />
+         <Typography variant="body2">
+            {row.location?.coordinates ? `${row.location.coordinates[1]}, ${row.location.coordinates[0]}` : "N/A"}
+         </Typography>
+      </Box>
+
+      <Divider sx={{ borderColor: '#333', my: 1.5 }} />
+
+      <Stack spacing={1}>
+        <Box display="flex" justifyContent="space-between">
+            <Typography variant="body2" color="#777">Reporter:</Typography>
+            <Typography variant="body2" color="#ddd">{row.reporter_id.fullName}</Typography>
+        </Box>
+        <Box display="flex" justifyContent="space-between">
+            <Typography variant="body2" color="#777">Priority:</Typography>
+            <Typography variant="body2" color="#ddd">{row.priority}</Typography>
+        </Box>
+        <Box display="flex" justifyContent="space-between">
+            <Typography variant="body2" color="#777">Engineer:</Typography>
+            <Typography variant="body2" color="#38bdf8">{row.assigned_engineer_id ? row.assigned_engineer_id.fullName : "N/A"}</Typography>
+        </Box>
+      </Stack>
+    </Card>
+  );
 
   return (
     <Box sx={{ p: 3, minHeight: '100vh', color: '#e0e0e0' }}>
@@ -130,7 +168,9 @@ export default function ReportsPage() {
         </Grid>
       </Grid>
 
-      {/* Table Container */}
+      {isMobile ? (
+        <Box>{reports.map(row => <MobileReportCard key={row.id} row={row} />)}</Box>
+      ) : (
       <Card
   sx={{
     p: 0,
@@ -207,7 +247,7 @@ export default function ReportsPage() {
       shape="rounded"
     />
   </Box>
-</Card>
+</Card>)}
     </Box>
   );
 }

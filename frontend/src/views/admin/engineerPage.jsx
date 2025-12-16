@@ -14,7 +14,9 @@ import {
   CircularProgress,
   TableBody,
   TableRow,
-  Pagination
+  Pagination,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { apiGet, apiPost } from "../../utils/api";
@@ -22,6 +24,10 @@ import AddEngineer from "./addEngineer";
 import StatusChip from "../../ui-component/admin/StatusChip";
 
 export default function EngineersPage() {
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [search, setSearch] = useState("");
   const [engineers, setEngineers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -67,6 +73,23 @@ export default function EngineersPage() {
   const handlePageChange = (_, value) => {
     setPage(value);
   };
+  
+  const MobileEngineerCard = ({ eng }) => (
+    <Card sx={{ mb: 2, p: 2, borderRadius: 3, border: '1px solid #444', bgcolor: '#1e2129' }}>
+      <Box display="flex" alignItems="center" gap={2} mb={2}>
+        <Avatar sx={{ bgcolor: '#1976d2' }}><EngineeringIcon /></Avatar>
+        <Box>
+          <Typography variant="h6" fontWeight="bold" color="#fff">{eng.fullName}</Typography>
+          <Typography variant="body2" color="#aaa">{eng.email}</Typography>
+        </Box>
+      </Box>
+      <Divider sx={{ borderColor: '#333', mb: 1.5 }} />
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="body2" color="#ccc">Active Tasks:</Typography>
+        <Typography variant="h6" color="#38bdf8" fontWeight="bold">{eng.activeTasks}</Typography>
+      </Box>
+    </Card>
+  );
 
   if (loading) {
     return (
@@ -132,6 +155,10 @@ export default function EngineersPage() {
         </Grid>
 
         {/* Table */}
+        {isMobile ? (
+          // MOBILE VIEW
+          <Box>{engineers.map((eng, idx) => <MobileEngineerCard key={idx} eng={eng} />)}</Box>
+        ) : (
         <Card sx={{ p: 0, borderRadius: 3, border: '1px solid #444' }}>
           <TableContainer sx={{ maxHeight: 500 }}>
             <Table stickyHeader sx={{
@@ -177,7 +204,7 @@ export default function EngineersPage() {
               shape="rounded"
             />
           </Box>
-        </Card>
+        </Card> )}
       </Box>
     )}
   </>
