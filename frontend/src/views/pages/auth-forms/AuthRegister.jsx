@@ -17,7 +17,7 @@ import {
   Box
 } from '@mui/material';
 
-// project imports
+import { apiPost } from '../../../utils/api';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import CustomFormControl from 'ui-component/extended/Form/CustomFormControl';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
@@ -76,20 +76,21 @@ export default function AuthRegister() {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      // const response = await fetch('http://localhost:5000/api/auth/register', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(payload)
+      // });
 
-      const data = await response.json();
+      const response = await apiPost('/api/auth/register', JSON.stringify(payload));
 
-      if (response.ok) {
-        console.log('✅ Register success:', data);
+
+      if (response.success) {
+        console.log('✅ Register success:', response);
         navigate('/login');
       } else {
-        console.error('❌ Register failed:', data.message || data.error);
-        alert(data.message || 'Registration failed');
+        console.error('❌ Register failed:', response.message || response.error);
+        alert(response.message || 'Registration failed');
       }
     } catch (err) {
       console.error('⚠️ Error connecting to backend:', err);
