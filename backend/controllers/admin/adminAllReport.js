@@ -66,3 +66,21 @@ exports.getAllReports = async (req, res) => {
     });
   }
 };
+
+exports.deleteReport = async (req, res) => {
+  try {
+
+    console.log(req)
+    
+    const { id } = req.params;
+    const report = await Incident.findById(id);
+    if (!report) return res.status(404).json({ success: false, message: 'Report not found' });
+
+    await Incident.findByIdAndDelete(id);
+
+    return res.json({ success: true, message: 'Report deleted' });
+  } catch (err) {
+    console.error('Delete report error', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

@@ -16,14 +16,23 @@ exports.getEngineers = async (req, res) => {
 
     const engineerData = await Promise.all(
       engineers.map(async (engineer) => {
-        const activeTasks = await Incident.countDocuments({
+        const incidents = await Incident.find({
           assigned_engineer_id: engineer._id,
-          status: { $in: ['in_progress', 'assigned'] }, // Active tasks
-        });
+          status: { $in: ['in_progress', 'assigned'] }
+        })
+          .select('title type_id status')
+          .populate('type_id', 'name')
+          .lean();
 
         return {
           ...engineer,
-          activeTasks,
+          activeTasks: incidents.length,
+          incidents: incidents.map(i => ({
+            _id: i._id,
+            title: i.title,
+            type: i.type_id?.name || 'Unknown',
+            status: i.status
+          }))
         };
       })
     );
@@ -136,3 +145,46 @@ exports.addEngineer = async (req, res) => {
   }
 };
 
+exports.unassignEngineer = async (req, res) => {
+  try {
+    const { incidentId } = req.body;
+    console.log(req)
+    if (!incidentId) {
+      return res.status(400).json({
+        success: false,
+        message: 'incidentId is required'
+      });
+    }
+
+    const incident = await Incident.findById(incidentId);
+    if (!incident) {
+      return res.status(404).json({
+        success: false,
+        message: 'Incident not found'
+      });
+    }
+
+    if (incident.status === 'completed') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot unassign a completed incident'
+      });
+    }
+
+    incident.assigned_engineer_id = null;
+    incident.status = 'reported';
+
+    await incident.save();
+
+    return res.json({
+      success: true,
+      message: 'Engineer unassigned successfully'
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to unassign engineer',
+      error: err.message
+    });
+  }
+};

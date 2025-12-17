@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -16,12 +16,20 @@ import {
   TableRow,
   Pagination,
   useMediaQuery,
-  useTheme
+  useTheme,
+  Menu,
+  MenuItem,
+  IconButton,
+  ListItemText,
+  Select
+
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { apiGet, apiPost } from "../../utils/api";
+import { apiGet, apiPost, apiPatch } from "../../utils/api";
 import AddEngineer from "./addEngineer";
-import StatusChip from "../../ui-component/admin/StatusChip";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { Collapse } from "@mui/material";
 
 export default function EngineersPage() {
 
@@ -36,8 +44,45 @@ export default function EngineersPage() {
   const [totalPages, setTotalPages] = useState(1);
 
   const [showAddForm, setShowAddForm] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedEngineer, setSelectedEngineer] = useState(null);
+  const [openEngineerRow, setOpenEngineerRow] = useState(null);
 
   const limit = 10; 
+
+  const handleOpenTasks = (event, engineer) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedEngineer(engineer);
+  };
+
+  const handleCloseTasks = () => {
+    setAnchorEl(null);
+    setSelectedEngineer(null);
+  };
+
+  const handleUnassign = async (incidentId) => {
+  const ok = window.confirm(
+    "Remove this task from the engineer?"
+  );
+  if (!ok) return;
+
+  try {
+    const res = await apiPatch(
+      "/api/admin/engineer/unassign",
+      { incidentId }
+    );
+
+    if (res.success) {
+      fetchEngineers(); // refresh engineers + tasks
+    } else {
+      alert(res.message || "Failed to unassign task");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Failed to unassign task");
+  }
+};
+
 
   const fetchEngineers = async () => {
     setLoading(true);
@@ -176,6 +221,7 @@ export default function EngineersPage() {
               {/* Header */}
               <TableHead>
                 <TableRow sx={{ backgroundColor: '#1f2229' }}>
+                  <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}></TableCell>
                   <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Name</TableCell>
                   <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Email</TableCell>
                   <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Active Tasks</TableCell>
@@ -183,17 +229,135 @@ export default function EngineersPage() {
               </TableHead>
 
               {/* Rows */}
-              <TableBody>
-                {engineers.map((eng, idx) => (
-                  <TableRow key={idx} hover sx={{ '&:hover': { backgroundColor: '#282c34' } }}>
-                    <TableCell>{eng.fullName}</TableCell>
-                    <TableCell>{eng.email}</TableCell>
-                    <TableCell>{eng.activeTasks}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+             {engineers.map((eng) => (
+  <React.Fragment key={eng._id}>
+
+    {/* MAIN ROW */}
+    <TableRow
+      hover
+      sx={{ cursor: "pointer" }}
+      onClick={() =>
+        setOpenEngineerRow(
+          openEngineerRow === eng._id ? null : eng._id
+        )
+      }
+    >
+      <TableCell sx={{ width: 40 }}>
+        {openEngineerRow === eng._id ? (
+          <ExpandLessIcon />
+        ) : (
+          <ExpandMoreIcon />
+        )}
+      </TableCell>
+
+      <TableCell>{eng.fullName}</TableCell>
+      <TableCell>{eng.email}</TableCell>
+      <TableCell>{eng.incidents?.length || 0}</TableCell>
+    </TableRow>
+
+    {/* EXPANDED ROW */}
+    <TableRow>
+      <TableCell
+        colSpan={4}
+        sx={{
+          py: 0,
+          border: 0,
+          backgroundColor: "rgba(255,255,255,0.02)"
+        }}
+      >
+        <Collapse
+          in={openEngineerRow === eng._id}
+          timeout="auto"
+          unmountOnExit
+        >
+          <Box sx={{ p: 2 }}>
+
+            <Typography sx={{ fontWeight: 600, mb: 1 }}>
+              Active Tasks
+            </Typography>
+
+            {(eng.incidents || []).length === 0 ? (
+              <Typography color="#aaa">
+                No active tasks
+              </Typography>
+            ) : (
+              (eng.incidents || []).map((inc) => (
+                <Box
+                  key={inc._id}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    p: 1,
+                    mb: 1,
+                    borderRadius: 1,
+                    backgroundColor: "#0f1720"
+                  }}
+                >
+                  <Box>
+                    <Typography fontSize={14}>
+                      {inc.title || "Untitled"}
+                    </Typography>
+                    <Typography fontSize={12} color="#aaa">
+                      {inc.type}
+                    </Typography>
+                  </Box>
+
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => handleUnassign(inc._id)}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              ))
+            )}
+
+          </Box>
+        </Collapse>
+      </TableCell>
+    </TableRow>
+
+  </React.Fragment>
+))}
+
             </Table>
           </TableContainer>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleCloseTasks}
+            PaperProps={{
+              sx: {
+                bgcolor: "#1e2129",
+                color: "#e0e0e0",
+                minWidth: 260,
+                border: "1px solid #333"
+              }
+            }}
+          >
+            {selectedEngineer?.incidents?.map((inc) => (
+              <MenuItem key={inc._id} sx={{ display: "flex", justifyContent: "space-between" }}>
+                <ListItemText
+                  primary={inc.title}
+                  secondary={inc.type}
+                />
+
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={() => handleUnassign(inc._id)}
+                >
+                  Remove
+                </Button>
+              </MenuItem>
+            ))}
+
+            {selectedEngineer?.incidents?.length === 0 && (
+              <MenuItem disabled>No active tasks</MenuItem>
+            )}
+          </Menu>
 
           <Box sx={{ mt: 3, display: "flex", justifyContent: "center", py: 2 }}>
             <Pagination
