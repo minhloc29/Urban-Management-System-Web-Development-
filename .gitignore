@@ -29,8 +29,8 @@ target/
 
 ### VS Code ###
 .vscode/
-# */.env
-# .env
+*/.env
+.env
 frontend_test/
 Landing-page/
 */guideline.txt
