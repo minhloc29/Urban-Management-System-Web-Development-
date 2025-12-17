@@ -34,3 +34,6 @@ target/
 frontend_test/
 Landing-page/
 */guideline.txt
+
+# MACOS
+.DS_Store
