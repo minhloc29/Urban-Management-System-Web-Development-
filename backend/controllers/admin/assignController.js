@@ -15,15 +15,30 @@ exports.getIncidentsForAssignment = async (req, res) => {
       ];
     }
     if (status) {
-      query.status = status;
+      if(status === 'reported'){
+        query.status = { $in: ['reported'] };
+      }
+      else if(status === 'assigned'){
+        query.status = { $in: ['assigned'] };
+      }
+       else if(status === 'completed'){
+        query.status = { $in: ['completed'] };
+      }
+      else{
+        query.status = status;
+      }
+      
     }
 
-    const sortOption = sort === 'newest' ? { createdAt: -1 } : { createdAt: 1 };
+    
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 10;
+    const sortOption = sort === 'newest' ? { created_at: -1 } : { created_at: 1 };
 
     const incidents = await Incident.find(query)
       .sort(sortOption)
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit))
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum)
       .populate('type_id', 'name icon_url')
       .populate('reporter_id', 'fullName')
       .populate('assigned_engineer_id', 'fullName');
@@ -33,8 +48,8 @@ exports.getIncidentsForAssignment = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: incidents,
-      totalPages: Math.ceil(total / limit),
-      page: parseInt(page),
+      totalPages: Math.ceil(total / limitNum),
+      page: pageNum,
     });
   } catch (err) {
     return res.status(500).json({

@@ -19,9 +19,11 @@ import {
   Chip
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { apiGet, apiPost } from "../../utils/api";
+import { apiGet, apiPost, apiPatch } from "../../utils/api";
 import AddEngineer from "./addEngineer";
 import StatusChip from "../../ui-component/admin/StatusChip";
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from "@mui/material/IconButton";
 
 export default function ReportsPage() {
   const theme = useTheme();
@@ -35,6 +37,32 @@ export default function ReportsPage() {
   const [totalPages, setTotalPages] = useState(1); 
 
   const limit = 10;
+
+  const handleDeleteReport = async (reportId) => {
+    // 1. Confirm before delete
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this report?"
+    );
+    if (!confirmed) return;
+
+    try {
+      const response = await apiPatch(
+        `/api/admin/reports/${reportId}/delete`
+      );
+
+      if (response.success) {
+       
+        setReports((prev) =>
+          prev.filter((r) => r._id !== reportId)
+        );
+      } else {
+        alert(response.message || "Failed to delete report");
+      }
+    } catch (error) {
+      console.error("Delete report error:", error);
+      alert("Failed to delete report");
+    }
+  };
 
   const fetchReports = async () => {
     setLoading(true);
@@ -139,7 +167,6 @@ export default function ReportsPage() {
           </Box>
         </Grid>
 
-        {/* Sort Dropdown */}
         <Grid item xs={12} sm={4} md={2} sx={{ ml: "auto" }}>
           <Select
             fullWidth
@@ -194,20 +221,18 @@ export default function ReportsPage() {
     }
   }}>
 
-      {/* Header */}
       <TableHead>
         <TableRow sx={{ backgroundColor: '#1f2229' }}>
           <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Category</TableCell>
           <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Location</TableCell>
           <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Citizen</TableCell>
-          <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Priority</TableCell>
           <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Status</TableCell>
           <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Engineer</TableCell>
           <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Reported</TableCell>
+          <TableCell sx={{ color: '#bdbdbd', fontWeight: 700 }}>Delete</TableCell>
         </TableRow>
       </TableHead>
 
-      {/* Rows */}
       <TableBody>
         {reports.map((row) => (
           <TableRow
@@ -224,11 +249,22 @@ export default function ReportsPage() {
                       : "N/A"}
                   </TableCell>
             <TableCell>{row.reporter_id.fullName}</TableCell>
-            <TableCell>{row.priority}</TableCell>
             <TableCell><StatusChip status={row.status} /></TableCell>
             
             <TableCell>{row.assigned_engineer_id ? row.assigned_engineer_id.fullName : "N/A"}</TableCell>
             <TableCell>{new Date(row.created_at).toLocaleString()}</TableCell>
+            <TableCell>
+              <IconButton
+                color="error"
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();   // IMPORTANT
+                  handleDeleteReport(row._id);
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </TableCell>
 
           </TableRow>
         ))}

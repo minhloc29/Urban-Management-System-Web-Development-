@@ -1,5 +1,5 @@
 // src/pages/AssignCustomerPage.jsx
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useCallback} from 'react';
 import {
   Box,
   Grid,
@@ -60,7 +60,6 @@ export default function AssignCustomerPage() {
 
         const response = await apiGet(`/api/admin/assign/incidents?${params.toString()}`);
         
-        console.log("Check all incidents: ", response)
         if (response.success) {
           setReports(response.data || []);
           setTotalPages(response.totalPages || 1);
@@ -128,10 +127,6 @@ export default function AssignCustomerPage() {
           <Typography variant="subtitle2" sx={{ color: '#bdbdbd' }}>Active Members</Typography>
         </div>
 
-        <Box display="flex" gap={2}>
-          <Button variant="outlined" size="small">Export CSV</Button>
-          <Button variant="outlined" size="small">Bulk assign</Button>
-        </Box>
       </Box>
 
       {/* Top Controls */}
@@ -170,10 +165,9 @@ export default function AssignCustomerPage() {
             MenuProps={{ PaperProps: { sx: { backgroundColor: '#23272f', color: '#e0e0e0' } } }}
           >
             <MenuItem value="">All Status</MenuItem>
-            <MenuItem value="pending">Pending</MenuItem>
+            <MenuItem value="reported">Reported</MenuItem>
             <MenuItem value="assigned">Assigned</MenuItem>
-            <MenuItem value="resolved">Resolved</MenuItem>
-            <MenuItem value="critical">Critical</MenuItem>
+            <MenuItem value="completed">Completed</MenuItem>
           </Select>
         </Grid>
 

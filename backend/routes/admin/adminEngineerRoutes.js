@@ -7,5 +7,6 @@ const permissionMiddleware = require('../../middleware/permissionMiddleware');
 router.get('/', authMiddleware, engineerController.getEngineers);
 router.get('/available', authMiddleware, engineerController.getAvailableEngineers);
 router.post('/add_engineer', authMiddleware, permissionMiddleware(['MANAGE_ENGINEERS']), engineerController.addEngineer);
+router.patch('/unassign', authMiddleware, engineerController.unassignEngineer);
 
 module.exports = router;

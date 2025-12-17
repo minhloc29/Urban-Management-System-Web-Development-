@@ -108,14 +108,13 @@ export default function ProfileSection() {
       />
       <Popper
       sx={{
-        zIndex: theme.zIndex.modal + 1
+        zIndex: 2000
       }}
         placement="bottom"
         open={open}
         anchorEl={anchorRef.current}
         role={undefined}
         transition
-        disablePortal
         modifiers={[
           {
             name: 'offset',
@@ -129,13 +128,12 @@ export default function ProfileSection() {
           <ClickAwayListener onClickAway={handleClose}>
             <Transitions in={open} {...TransitionProps}>
               <Paper>
-                
                 {open && (
                   <MainCard border={false} elevation={16} content={false} boxShadow shadow={theme.shadows[16]}>
                     <Box sx={{ p: 2, pb: 0 }}>
                       <Stack>
                         <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-                          <Typography variant="h4">Good Morning,</Typography>
+                          <Typography variant="h4">Hello,</Typography>
                           <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
                             Johne Doe
                           </Typography>
