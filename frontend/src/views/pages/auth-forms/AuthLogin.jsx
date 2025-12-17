@@ -14,7 +14,7 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-
+import { apiGet, apiPost } from '../../../utils/api';
 // project imports
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import CustomFormControl from 'ui-component/extended/Form/CustomFormControl';
@@ -45,24 +45,13 @@ export default function AuthLogin() {
     e.preventDefault();
 
     try {
-      // 👇 Sửa lại URL cho đúng với biến môi trường nếu cần
-      // const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
       
-      if (response.ok) {
-        console.log('✅ Login success:', data);
-        const { token, user } = data;
-        
-        // --- SỬA QUAN TRỌNG TẠI ĐÂY ---
-        // Truyền tách biệt 2 tham số: (userData, token) để khớp với AuthContext
+      const response = await apiPost('/api/auth/login', formData);
+
+      if (response.success) {
+        console.log('✅ Login success:', response);
+        const { token, user } = response;
+
         login(user, token); 
         // ------------------------------
         
