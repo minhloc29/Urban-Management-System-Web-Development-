@@ -1,19 +1,19 @@
 // Import các thư viện cần thiết
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const connectDB = require('./config/db'); // Đường dẫn tới file db.js của Lộc
+const connectDB = require('../config/db'); // Đường dẫn tới file db.js của Lộc
 
 // Load .env
 dotenv.config();
 
 // Import TẤT CẢ các Models
 // (Đảm bảo đường dẫn tới thư mục 'models' là chính xác)
-const User = require('./models/User');
-const Role = require('./models/Role');
-const Permission = require('./models/Permission');
-const IncidentType = require('./models/IncidentType');
+const User = require('../models/User');
+const Role = require('../models/Role');
+const Permission = require('../models/Permission');
+const IncidentType = require('../models/IncidentType');
 const Team = require('./models/Team');
-const Incident = require('./models/Incident');
+const Incident = require('../models/Incident');
 
 // Kết nối DB
 connectDB();
