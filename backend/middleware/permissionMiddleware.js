@@ -3,7 +3,7 @@ const Role = require('../models/Role');
 const permissionMiddleware = (requiredPermissions) => {
   return async (req, res, next) => {
     try {
-      const userRole = req.user.role; // Assuming `req.user.role` contains the user's role ID
+      const userRole = req.user.role; 
 
       console.log(userRole)
 

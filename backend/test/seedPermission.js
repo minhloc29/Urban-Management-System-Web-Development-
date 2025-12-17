@@ -7,9 +7,13 @@ dotenv.config();
 
 const seedRolesAndPermissions = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(process.env.MONGODB_URI);
 
-    // Define permissions
+    console.log('Connected to MongoDB');
+
+    // -----------------------------
+    // 1. Define permissions
+    // -----------------------------
     const permissions = [
       { code: 'MANAGE_ENGINEERS', description: 'Manage engineers' },
       { code: 'VIEW_ALL_INCIDENTS', description: 'View all incidents' },
@@ -17,40 +21,74 @@ const seedRolesAndPermissions = async () => {
       { code: 'UPDATE_INCIDENT_STATUS', description: 'Update incident status' },
       { code: 'VIEW_ASSIGNED_TASKS', description: 'View assigned tasks' },
       { code: 'CREATE_INCIDENT', description: 'Create new incidents' },
-      { code: 'VIEW_OWN_INCIDENTS', description: 'View own incidents' },
+      { code: 'VIEW_OWN_INCIDENTS', description: 'View own incidents' }
     ];
 
-    const permissionDocs = await Permission.insertMany(permissions);
+    // -----------------------------
+    // 2. Upsert permissions
+    // -----------------------------
+    const permissionMap = {};
 
-    // Define roles
+    for (const perm of permissions) {
+      const doc = await Permission.findOneAndUpdate(
+        { code: perm.code },
+        { $setOnInsert: perm },
+        { upsert: true, new: true }
+      );
+
+      permissionMap[perm.code] = doc._id;
+    }
+
+    console.log('Permissions seeded/updated');
+
+    // -----------------------------
+    // 3. Define roles
+    // -----------------------------
     const roles = [
       {
         name: 'authority',
-        permissions: permissionDocs.filter((p) =>
-          ['MANAGE_ENGINEERS', 'VIEW_ALL_INCIDENTS', 'ASSIGN_ENGINEER', 'UPDATE_INCIDENT_STATUS'].includes(p.code)
-        ).map((p) => p._id),
+        permissions: [
+          permissionMap.MANAGE_ENGINEERS,
+          permissionMap.VIEW_ALL_INCIDENTS,
+          permissionMap.ASSIGN_ENGINEER,
+          permissionMap.UPDATE_INCIDENT_STATUS
+        ]
       },
       {
         name: 'technician',
-        permissions: permissionDocs.filter((p) =>
-          ['VIEW_ASSIGNED_TASKS', 'UPDATE_INCIDENT_STATUS'].includes(p.code)
-        ).map((p) => p._id),
+        permissions: [
+          permissionMap.VIEW_ASSIGNED_TASKS,
+          permissionMap.UPDATE_INCIDENT_STATUS
+        ]
       },
       {
         name: 'citizen',
-        permissions: permissionDocs.filter((p) =>
-          ['CREATE_INCIDENT', 'VIEW_OWN_INCIDENTS'].includes(p.code)
-        ).map((p) => p._id),
-      },
+        permissions: [
+          permissionMap.CREATE_INCIDENT,
+          permissionMap.VIEW_OWN_INCIDENTS
+        ]
+      }
     ];
 
-    await Role.insertMany(roles);
+    // -----------------------------
+    // 4. Upsert roles
+    // -----------------------------
+    for (const role of roles) {
+      await Role.findOneAndUpdate(
+        { name: role.name },
+        { $set: { permissions: role.permissions } },
+        { upsert: true }
+      );
+    }
 
-    console.log('Roles and permissions seeded successfully');
-    mongoose.connection.close();
+    console.log('Roles seeded/updated');
+    console.log('Seeding completed successfully');
+
+    await mongoose.connection.close();
   } catch (err) {
-    console.error('Error seeding roles and permissions:', err);
-    mongoose.connection.close();
+    console.error('Seeding error:', err);
+    await mongoose.connection.close();
+    process.exit(1);
   }
 };
 

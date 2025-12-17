@@ -47,44 +47,7 @@ export default function UserHomePage() {
       }
     }
 
-    const fetchRecentReports = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:5000/api/user/incidents/public"
-        );
-
-        if (res.data.success) {
-          const recentData = res.data.data.slice(0, 5);
-
-          const mappedReports = recentData.map((item) => ({
-            id: `R-${item._id.slice(-6).toUpperCase()}`,
-            category: item.type_id?.name || "Incident",
-            location: item.address,
-            status: mapStatus(item.status)
-          }));
-
-          setReports(mappedReports);
-        }
-      } catch (error) {
-        console.error("Failed to load recent reports:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecentReports();
   }, []);
-
-  const mapStatus = (status) => {
-    const statusMap = {
-      reported: "New Report",
-      assigned: "Assigned",
-      in_progress: "In Progress",
-      completed: "Completed",
-      rejected: "Rejected"
-    };
-    return statusMap[status] || "Pending";
-  };
 
   return (
     <Box
