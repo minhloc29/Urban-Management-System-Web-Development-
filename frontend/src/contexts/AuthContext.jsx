@@ -37,10 +37,6 @@ export function AuthProvider({ children }) {
              setRole(parsedUser.role);
           }
 
-          // Gọi API verify lại cho chắc
-          //const response = await axios.get('http://localhost:5000/api/auth/me');
-          //setUser(response.data);
-          //setRole(response.data.role);
           console.log("✅ Token verified via LocalStorage.");
 
         } catch (error) {

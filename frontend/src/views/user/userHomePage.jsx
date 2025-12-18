@@ -5,6 +5,7 @@ import {
   Card,
   Typography,
   Avatar,
+  Stack,
   CircularProgress
 } from "@mui/material";
 import axios from "axios";
@@ -51,81 +52,100 @@ export default function UserHomePage() {
 
   return (
     <Box
-      sx={{
-        position: "relative",
-        padding: "40px",
-        minHeight: "100vh",
-        color: "white",
-        overflow: "hidden"
-      }}
-    >
-      <Box
-        sx={{
-          position: "absolute",
-          width: 350,
-          height: 350,
-          borderRadius: "50%",
-          background: "rgba(56,189,248,0.15)",
-          filter: "blur(120px)",
-          top: 60,
-          left: -80
-        }}
-      />
-      <Box
-        sx={{
-          position: "absolute",
-          width: 300,
-          height: 300,
-          borderRadius: "50%",
-          background: "rgba(129,140,248,0.18)",
-          filter: "blur(140px)",
-          bottom: 80,
-          right: -40
-        }}
-      />
+  sx={{
+    position: "relative",
+    p: "40px",
+    minHeight: "100vh",
+    color: "white",
+    overflow: "hidden",
+  }}
+>
+  {/* Background blur effects */}
+  <Box
+    sx={{
+      position: "absolute",
+      width: 350,
+      height: 350,
+      borderRadius: "50%",
+      background: "rgba(56,189,248,0.15)",
+      filter: "blur(120px)",
+      top: 60,
+      left: -80,
+    }}
+  />
+  <Box
+    sx={{
+      position: "absolute",
+      width: 300,
+      height: 300,
+      borderRadius: "50%",
+      background: "rgba(129,140,248,0.18)",
+      filter: "blur(140px)",
+      bottom: 80,
+      right: -40,
+    }}
+  />
 
-      <Grid container sx={{ justifyContent: "space-around" }}>
-        <Grid item xs={6}>
-          <UserIntroCard username={userInfo.fullName} />
-        </Grid>
-
-        <Grid item xs="auto">
-          <UserProfileCard
-            name={userInfo.fullName}
-            role={userInfo.role}
-            avatarSrc=""
-          />
-        </Grid>
+  {/* PAGE STACK */}
+  <Stack spacing={10}>
+    {/* TOP SECTION */}
+    <Grid container spacing={3} sx={{
+        justifyContent: "space-around",
+        alignItems: "center",
+      }}>
+      {/* LEFT (4) */}
+      <Grid size="grow">
+        <UserIntroCard username={userInfo.fullName} />
       </Grid>
 
-      <Grid
-        container
-        spacing={3}
-        sx={{ mt: 5, justifyContent: "space-around" }}
-      >
+      {/* RIGHT (8) */}
+      <Grid size={4}>
+        <UserProfileCard
+          name={userInfo.fullName}
+          role={userInfo.role}
+          avatarSrc=""
+        />
+      </Grid>
+    </Grid>
+
+    {/* FEATURES SECTION */}
+    <Grid container spacing={2} sx={{
+        justifyContent: "space-around",
+        alignItems: "center",
+      }}>
+      <Grid size={4}>
         <FeatureCard
           icon={<ReportProblemIcon sx={{ fontSize: 42 }} />}
           title="Report an Issue"
           desc="Quickly submit reports with images and location."
           color="#fca5a5"
-          href="/user/report-problem"
+          href="/user/report_problem"
         />
+      </Grid>
+
+      <Grid size={4}>
         <FeatureCard
           icon={<ListAltIcon sx={{ fontSize: 42 }} />}
           title="Track My Reports"
           desc="Monitor the progress of your submitted issues."
           color="#93c5fd"
-          href="/user/my-reports"
+          href="/user/my_report"
         />
+      </Grid>
+
+      <Grid size="grow">
         <FeatureCard
           icon={<AccessTimeIcon sx={{ fontSize: 42 }} />}
           title="View History"
           desc="Review your completed incident history."
           color="#c4b5fd"
-          href="/user/my-reports"
+          href="/user/my_report"
         />
       </Grid>
-    </Box>
+    </Grid>
+  </Stack>
+</Box>
+
   );
 }
 

@@ -25,7 +25,6 @@ export default function InProgressTasksCard({ isLoading, count = 5, today = 2 })
         {isLoading ? (
           <Skeleton
             variant="rectangular"
-            height={80}
             sx={{ bgcolor: "rgba(255,255,255,0.08)" }}
           />
         ) : (
