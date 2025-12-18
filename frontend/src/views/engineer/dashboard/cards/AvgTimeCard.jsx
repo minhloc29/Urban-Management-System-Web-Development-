@@ -9,6 +9,7 @@ export default function AvgTimeCard({ isLoading, avgTime = 3.2, trend = -0.4 }) 
     <Card
       sx={{
         height: "100%",
+        width: "100%",
         background: "linear-gradient(135deg, #0B1220 0%, #111827 100%)",
         borderRadius: 3,
         border: "1px solid rgba(255,255,255,0.08)",
@@ -27,7 +28,6 @@ export default function AvgTimeCard({ isLoading, avgTime = 3.2, trend = -0.4 }) 
         {isLoading ? (
           <Skeleton
             variant="rectangular"
-            height={80}
             sx={{ bgcolor: "rgba(255,255,255,0.08)" }}
           />
         ) : (

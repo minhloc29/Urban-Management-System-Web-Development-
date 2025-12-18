@@ -9,7 +9,7 @@ import LogoSection from '../LogoSection';
 import SearchSection from './SearchSection';
 import ProfileSection from './ProfileSection';
 import NotificationSection from './NotificationSection';
-
+import NotificationBell from '../../../ui-component/extended/NotificationBell';
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 
 // assets
@@ -56,7 +56,7 @@ export default function Header() {
       <Box sx={{ flexGrow: 1 }} />
 
   
-
+      <NotificationSection />
       <ProfileSection />
     </>
   );

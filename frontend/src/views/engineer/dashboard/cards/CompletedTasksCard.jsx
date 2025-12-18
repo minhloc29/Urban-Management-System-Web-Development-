@@ -31,7 +31,6 @@ export default function CompletedTasksCard({
         {isLoading ? (
           <Skeleton
             variant="rectangular"
-            height={80}
             sx={{ bgcolor: "rgba(255,255,255,0.08)" }}
           />
         ) : (

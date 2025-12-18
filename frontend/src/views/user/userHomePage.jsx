@@ -5,6 +5,7 @@ import {
   Card,
   Typography,
   Avatar,
+  Stack,
   CircularProgress
 } from "@mui/material";
 import axios from "axios";
@@ -12,7 +13,6 @@ import axios from "axios";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import RecentReportsCard from "./card/RecentReportsCard";
 import UserIntroCard from "./card/UserIntroCard";
 import UserProfileCard from "./card/UserProfileCard";
 
@@ -48,129 +48,103 @@ export default function UserHomePage() {
       }
     }
 
-    const fetchRecentReports = async () => {
-      try {
-        const res = await axios.get(
-          "http://localhost:5000/api/user/incidents/public"
-        );
-
-        if (res.data.success) {
-          const recentData = res.data.data.slice(0, 5);
-
-          const mappedReports = recentData.map((item) => ({
-            id: `R-${item._id.slice(-6).toUpperCase()}`,
-            category: item.type_id?.name || "Incident",
-            location: item.address,
-            status: mapStatus(item.status)
-          }));
-
-          setReports(mappedReports);
-        }
-      } catch (error) {
-        console.error("Failed to load recent reports:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecentReports();
   }, []);
-
-  const mapStatus = (status) => {
-    const statusMap = {
-      reported: "New Report",
-      assigned: "Assigned",
-      in_progress: "In Progress",
-      completed: "Completed",
-      rejected: "Rejected"
-    };
-    return statusMap[status] || "Pending";
-  };
 
   return (
     <Box
-      sx={{
-        position: "relative",
-        // RESPONSIVE UPDATE: Mobile padding 2 (16px), Desktop padding 5 (40px)
-        p: { xs: 2, md: 5 }, 
-        minHeight: "100vh",
-        color: "white",
-        overflowX: "hidden" // Ngăn cuộn ngang trên mobile
-      }}
-    >
-      {/* Background Blobs - Thu nhỏ trên mobile để đỡ rối */}
-      <Box
-        sx={{
-          position: "absolute",
-          width: { xs: 200, md: 350 }, // Mobile nhỏ hơn
-          height: { xs: 200, md: 350 },
-          borderRadius: "50%",
-          background: "rgba(56,189,248,0.15)",
-          filter: "blur(120px)",
-          top: 60,
-          left: -80,
-          zIndex: 0
-        }}
-      />
-      <Box
-        sx={{
-          position: "absolute",
-          width: { xs: 150, md: 300 },
-          height: { xs: 150, md: 300 },
-          borderRadius: "50%",
-          background: "rgba(129,140,248,0.18)",
-          filter: "blur(140px)",
-          bottom: 80,
-          right: -40,
-          zIndex: 0
-        }}
-      />
+  sx={{
+    position: "relative",
+    p: "40px",
+    minHeight: "100vh",
+    color: "white",
+    overflow: "hidden",
+  }}
+>
+  {/* Background blur effects */}
+  <Box
+    sx={{
+      position: "absolute",
+      width: 350,
+      height: 350,
+      borderRadius: "50%",
+      background: "rgba(56,189,248,0.15)",
+      filter: "blur(120px)",
+      top: 60,
+      left: -80,
+    }}
+  />
+  <Box
+    sx={{
+      position: "absolute",
+      width: 300,
+      height: 300,
+      borderRadius: "50%",
+      background: "rgba(129,140,248,0.18)",
+      filter: "blur(140px)",
+      bottom: 80,
+      right: -40,
+    }}
+  />
 
-      {/* Grid container chính */}
-      <Grid container spacing={3} sx={{ position: "relative", zIndex: 1 }}>
-        {/* RESPONSIVE UPDATE: xs=12 (full dòng mobile), md=7 (7 phần desktop) */}
-        <Grid item xs={12} md={7}>
-          <UserIntroCard username={userInfo.fullName} />
-        </Grid>
-
-        {/* RESPONSIVE UPDATE: xs=12 (full dòng mobile), md=5 */}
-        <Grid item xs={12} md={5}>
-          <UserProfileCard
-            name={userInfo.fullName}
-            role={userInfo.role}
-            avatarSrc=""
-          />
-        </Grid>
+  {/* PAGE STACK */}
+  <Stack spacing={10}>
+    {/* TOP SECTION */}
+    <Grid container spacing={3} sx={{
+        justifyContent: "space-around",
+        alignItems: "center",
+      }}>
+      {/* LEFT (4) */}
+      <Grid size="grow">
+        <UserIntroCard username={userInfo.fullName} />
       </Grid>
 
-      {/* Feature Cards */}
-      <Grid
-        container
-        spacing={3}
-        sx={{ mt: { xs: 2, md: 5 }, position: "relative", zIndex: 1 }}
-      >
+      {/* RIGHT (8) */}
+      <Grid size={4}>
+        <UserProfileCard
+          name={userInfo.fullName}
+          role={userInfo.role}
+          avatarSrc=""
+        />
+      </Grid>
+    </Grid>
+
+    {/* FEATURES SECTION */}
+    <Grid container spacing={2} sx={{
+        justifyContent: "space-around",
+        alignItems: "center",
+      }}>
+      <Grid size={4}>
         <FeatureCard
           icon={<ReportProblemIcon sx={{ fontSize: 42 }} />}
           title="Report an Issue"
           desc="Quickly submit reports with images and location."
           color="#fca5a5"
-          href="/user/report-problem"
+          href="/user/report_problem"
         />
+      </Grid>
+
+      <Grid size={4}>
         <FeatureCard
           icon={<ListAltIcon sx={{ fontSize: 42 }} />}
           title="Track My Reports"
           desc="Monitor the progress of your submitted issues."
           color="#93c5fd"
-          href="/user/my-reports"
+          href="/user/my_report"
         />
+      </Grid>
+
+      <Grid size="grow">
         <FeatureCard
           icon={<AccessTimeIcon sx={{ fontSize: 42 }} />}
           title="View History"
           desc="Review your completed incident history."
           color="#c4b5fd"
-          href="/user/my-reports"
+          href="/user/my_report"
         />
       </Grid>
+    </Grid>
+  </Stack>
+</Box>
 
       <Box sx={{ mt: 4, position: "relative", zIndex: 1 }}>
         {loading ? (

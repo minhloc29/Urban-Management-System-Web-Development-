@@ -25,14 +25,15 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+
 
 ### VS Code ###
 .vscode/
-# */.env
-# .env
+*/.env
+.env
 frontend_test/
 Landing-page/
 */guideline.txt
+
+# MACOS
+.DS_Store

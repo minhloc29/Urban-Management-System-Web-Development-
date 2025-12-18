@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
+// src/pages/AssignCustomerPage.jsx
+import React, { useEffect, useMemo, useState, useCallback} from 'react';
 import {
   Box, Grid, Typography, InputBase, MenuItem, Select, Pagination, CircularProgress,
   Button, Table, TableHead, TableBody, TableRow, TableCell, TableContainer,
@@ -29,8 +30,16 @@ export default function AssignCustomerPage() {
   const loadReports = useCallback(async ({ q = search, s = statusFilter, p = page, so = sort } = {}) => {
       setLoading(true);
       try {
-        const params = new URLSearchParams({ page: p, limit, search: q || '', status: s || '', sort: so || '' });
-        const response = await apiGet(`/api/admin/assign/incidents`, params);
+        const params = new URLSearchParams({
+          page: p,
+          limit,
+          search: q || '',
+          status: s || '',
+          sort: so || ''
+        });
+
+        const response = await apiGet(`/api/admin/assign/incidents?${params.toString()}`);
+        
         if (response.success) {
           setReports(response.data || []);
           setTotalPages(response.totalPages || 1);
@@ -97,13 +106,20 @@ export default function AssignCustomerPage() {
          <Typography variant="subtitle2" sx={{ color: '#bdbdbd' }}>Assign incidents to engineers</Typography>
       </Box>
 
-      {/* FILTER CONTROLS */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={5}>
-            <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: '#23272f', borderRadius: 2, px: 2, py: 1, border: '1px solid #444' }}>
-                <SearchIcon sx={{ mr: 1, color: '#bdbdbd' }} />
-                <InputBase placeholder="Search..." fullWidth value={search} onChange={(e) => setSearch(e.target.value)} sx={{ color: '#e0e0e0' }} />
-            </Box>
+        <Grid item xs={6} sm={3} md={2}>
+          <Select
+            fullWidth
+            value={statusFilter}
+            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); loadReports({ s: e.target.value, p: 1 }); }}
+            displayEmpty
+            sx={{ backgroundColor: '#23272f', borderRadius: 2, height: '42px', color: '#e0e0e0' }}
+            MenuProps={{ PaperProps: { sx: { backgroundColor: '#23272f', color: '#e0e0e0' } } }}
+          >
+            <MenuItem value="">All Status</MenuItem>
+            <MenuItem value="reported">Reported</MenuItem>
+            <MenuItem value="assigned">Assigned</MenuItem>
+            <MenuItem value="completed">Completed</MenuItem>
+          </Select>
         </Grid>
         <Grid item xs={6} md={3}>
             <Select fullWidth value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} displayEmpty sx={{ bgcolor: '#23272f', color: '#e0e0e0', height: 45 }}>

@@ -7,6 +7,17 @@ export function AuthProvider({ children }) {
   const [role, setRole] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(null);
+
+  const clearAuthData = () => {
+    setUser(null);
+    setRole(null);
+    setToken(null);
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
+    delete axios.defaults.headers.common['Authorization'];
+  };
 
   const clearAuthData = () => {
     setUser(null);
@@ -25,6 +36,7 @@ export function AuthProvider({ children }) {
       // Kiểm tra kỹ token có phải undefined string không
       if (token && token !== "undefined" && token !== "null") {
         try {
+          setToken(token);
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
           // Nếu có user lưu trong local rồi thì load lên luôn cho nhanh (Optimistic UI)
@@ -34,10 +46,6 @@ export function AuthProvider({ children }) {
              setRole(parsedUser.role);
           }
 
-          // Gọi API verify lại cho chắc
-          //const response = await axios.get('http://localhost:5000/api/auth/me');
-          //setUser(response.data);
-          //setRole(response.data.role);
           console.log("✅ Token verified via LocalStorage.");
 
         } catch (error) {
@@ -65,7 +73,8 @@ export function AuthProvider({ children }) {
 
     setUser(userData);
     setRole(userData.role);
-    
+    setToken(token);
+
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('role', userData.role);
     localStorage.setItem('userToken', token); 
@@ -81,7 +90,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, role, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, role, token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -37,17 +37,14 @@ export default function UserProfileCard({
           }}
         />
 
-        {/* Name */}
         <Typography variant="h4" sx={{ mt: 3, fontWeight: 700, color: "#f1f5f9" }}>
           {name}
         </Typography>
 
-        {/* Role */}
         <Typography sx={{ opacity: 0.65, fontSize: "1.05rem" }}>
           {role}
         </Typography>
 
-        {/* Stats Section */}
         <Box
           sx={{
             display: "flex",

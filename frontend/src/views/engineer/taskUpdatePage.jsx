@@ -48,10 +48,10 @@ export default function TaskUpdatePage() {
         if (found) {
             setTask(found);
             setStatus(found.status === 'assigned' ? 'in_progress' : found.status);
-            setTaskFound(true); // <-- Đánh dấu tìm thấy thành công
+            setTaskFound(true); 
         } else {
             console.error("❌ Không tìm thấy task nào khớp với ID:", id);
-            setTaskFound(false); // <-- Đánh dấu không tìm thấy
+            setTaskFound(false); 
         }
       } catch (err) {
         console.error("Lỗi tải chi tiết:", err);
