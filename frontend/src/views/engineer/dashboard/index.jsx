@@ -40,29 +40,33 @@ export default function EngineerDashboard() {
 
   return (
     <Grid container spacing={gridSpacing} direction="column">
-      {/* TOP SUMMARY CARDS */}
-      <Grid item xs={12}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <AssignedTasksCard isLoading={isLoading} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <InProgressTasksCard isLoading={isLoading} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <CompletedTasksCard isLoading={isLoading} />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <AvgTimeCard isLoading={isLoading} />
-          </Grid>
-        </Grid>
+  
+  {/* TOP SUMMARY CARDS */}
+    <Grid container spacing={2} justifyContent="space-around">
+      
+      <Grid item xs={12} sm={6} md={3}>
+        <AssignedTasksCard isLoading={isLoading} />
       </Grid>
 
-      
-      {/* MAP VIEW */}
-      <Grid item xs={12}>
-        <TaskMap tasks={tasks} isLoading={isLoading} />
+      <Grid item xs={12} sm={6} md={3}>
+        <InProgressTasksCard isLoading={isLoading} />
       </Grid>
+
+      <Grid item xs={12} sm={6} md={3}>
+        <CompletedTasksCard isLoading={isLoading} />
+      </Grid>
+
+      <Grid item xs={12} sm={6} md={3}>
+        <AvgTimeCard isLoading={isLoading} />
+      </Grid>
+
     </Grid>
+
+  {/* MAP VIEW */}
+  <Grid item xs={12}>
+    <TaskMap tasks={tasks} isLoading={isLoading} />
+  </Grid>
+
+</Grid>
   );
 }

@@ -7,6 +7,7 @@ export default function AssignedTasksCard({ isLoading }) {
    <Card
   sx={{
     height: "100%",
+    width: '100%',
     background: "linear-gradient(135deg, #0B1220, #111827)",
     borderRadius: 3,
     position: "relative",
@@ -33,7 +34,6 @@ export default function AssignedTasksCard({ isLoading }) {
         {isLoading ? (
           <Skeleton
             variant="rectangular"
-            height={70}
             sx={{ bgcolor: "rgba(255,255,255,0.08)" }}
           />
         ) : (
