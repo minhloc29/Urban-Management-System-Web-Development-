@@ -121,14 +121,7 @@ export default function AssignCustomerPage() {
             <MenuItem value="completed">Completed</MenuItem>
           </Select>
         </Grid>
-        <Grid item xs={6} md={3}>
-            <Select fullWidth value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} displayEmpty sx={{ bgcolor: '#23272f', color: '#e0e0e0', height: 45 }}>
-                <MenuItem value="">All Status</MenuItem>
-                <MenuItem value="pending">Pending</MenuItem>
-                <MenuItem value="assigned">Assigned</MenuItem>
-            </Select>
-        </Grid>
-      </Grid>
+        
 
       {/* DATA VIEW */}
       {loading ? <Box textAlign="center" p={5}><CircularProgress/></Box> : 

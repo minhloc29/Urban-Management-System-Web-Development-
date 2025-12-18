@@ -118,24 +118,7 @@ export default function EngineersPage() {
   useEffect(() => { fetchEngineers(); }, [page, search]);
   const handlePageChange = (_, value) => setPage(value);
 
-  // --- MOBILE CARD COMPONENT ---
-  const MobileEngineerCard = ({ eng }) => (
-    <Card sx={{ mb: 2, p: 2, borderRadius: 3, border: '1px solid #444', bgcolor: '#1e2129' }}>
-      <Box display="flex" alignItems="center" gap={2} mb={2}>
-        <Avatar sx={{ bgcolor: '#1976d2' }}><EngineeringIcon /></Avatar>
-        <Box>
-          <Typography variant="h6" fontWeight="bold" color="#fff">{eng.fullName}</Typography>
-          <Typography variant="body2" color="#aaa">{eng.email}</Typography>
-        </Box>
-      </Box>
-      <Divider sx={{ borderColor: '#333', mb: 1.5 }} />
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography variant="body2" color="#ccc">Active Tasks:</Typography>
-        <Typography variant="h6" color="#38bdf8" fontWeight="bold">{eng.activeTasks}</Typography>
-      </Box>
-    </Card>
-  );
-
+  
   if (loading) return <Box sx={{ textAlign: "center", p: 5 }}><CircularProgress /></Box>;
 
   return (

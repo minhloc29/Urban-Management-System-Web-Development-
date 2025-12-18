@@ -47,6 +47,7 @@ const initializeSocket = (server) => {
    
     // Join user to role-based room
     if (socket.user.role) {
+      console.log('Join the ${socket.user.role.name}', socket.user.role.name)
       socket.join(`role_${socket.user.role.name}`);
     }
 

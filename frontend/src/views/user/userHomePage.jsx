@@ -60,7 +60,7 @@ export default function UserHomePage() {
     overflow: "hidden",
   }}
 >
-  {/* Background blur effects */}
+  {/* ===== Background Blur ===== */}
   <Box
     sx={{
       position: "absolute",
@@ -71,8 +71,10 @@ export default function UserHomePage() {
       filter: "blur(120px)",
       top: 60,
       left: -80,
+      zIndex: 0,
     }}
   />
+
   <Box
     sx={{
       position: "absolute",
@@ -83,70 +85,71 @@ export default function UserHomePage() {
       filter: "blur(140px)",
       bottom: 80,
       right: -40,
+      zIndex: 0,
     }}
   />
 
-  {/* PAGE STACK */}
-  <Stack spacing={10}>
-    {/* TOP SECTION */}
-    <Grid container spacing={3} sx={{
-        justifyContent: "space-around",
-        alignItems: "center",
-      }}>
-      {/* LEFT (4) */}
-      <Grid size="grow">
-        <UserIntroCard username={userInfo.fullName} />
+  {/* ===== Page Content ===== */}
+  <Box sx={{ position: "relative", zIndex: 1 }}>
+    <Stack spacing={10}>
+      {/* TOP SECTION */}
+      <Grid
+        container
+        spacing={3}
+        alignItems="center"
+      >
+        <Grid size="grow">
+          <UserIntroCard username={userInfo.fullName} />
+        </Grid>
+
+        <Grid size={4}>
+          <UserProfileCard
+            name={userInfo.fullName}
+            role={userInfo.role}
+            avatarSrc=""
+          />
+        </Grid>
       </Grid>
 
-      {/* RIGHT (8) */}
-      <Grid size={4}>
-        <UserProfileCard
-          name={userInfo.fullName}
-          role={userInfo.role}
-          avatarSrc=""
-        />
-      </Grid>
-    </Grid>
+      {/* FEATURES SECTION */}
+      <Grid
+        container
+        spacing={3}
+        alignItems="center"
+      >
+        <Grid size={4}>
+          <FeatureCard
+            icon={<ReportProblemIcon sx={{ fontSize: 42 }} />}
+            title="Report an Issue"
+            desc="Quickly submit reports with images and location."
+            color="#fca5a5"
+            href="/user/report_problem"
+          />
+        </Grid>
 
-    {/* FEATURES SECTION */}
-    <Grid container spacing={2} sx={{
-        justifyContent: "space-around",
-        alignItems: "center",
-      }}>
-      <Grid size={4}>
-        <FeatureCard
-          icon={<ReportProblemIcon sx={{ fontSize: 42 }} />}
-          title="Report an Issue"
-          desc="Quickly submit reports with images and location."
-          color="#fca5a5"
-          href="/user/report_problem"
-        />
+        <Grid size={4}>
+          <FeatureCard
+            icon={<ListAltIcon sx={{ fontSize: 42 }} />}
+            title="Track My Reports"
+            desc="Monitor the progress of your submitted issues."
+            color="#93c5fd"
+            href="/user/my_report"
+          />
+        </Grid>
+
+        <Grid size="grow">
+          <FeatureCard
+            icon={<AccessTimeIcon sx={{ fontSize: 42 }} />}
+            title="View History"
+            desc="Review your completed incident history."
+            color="#c4b5fd"
+            href="/user/my_report"
+          />
+        </Grid>
       </Grid>
 
-      <Grid size={4}>
-        <FeatureCard
-          icon={<ListAltIcon sx={{ fontSize: 42 }} />}
-          title="Track My Reports"
-          desc="Monitor the progress of your submitted issues."
-          color="#93c5fd"
-          href="/user/my_report"
-        />
-      </Grid>
-
-      <Grid size="grow">
-        <FeatureCard
-          icon={<AccessTimeIcon sx={{ fontSize: 42 }} />}
-          title="View History"
-          desc="Review your completed incident history."
-          color="#c4b5fd"
-          href="/user/my_report"
-        />
-      </Grid>
-    </Grid>
-  </Stack>
-</Box>
-
-      <Box sx={{ mt: 4, position: "relative", zIndex: 1 }}>
+      {/* RECENT REPORTS */}
+      <Box sx={{ mt: 4 }}>
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <CircularProgress sx={{ color: "white" }} />
@@ -155,7 +158,10 @@ export default function UserHomePage() {
           <RecentReportsCard reports={reports} />
         )}
       </Box>
-    </Box>
+    </Stack>
+  </Box>
+</Box>
+
   );
 }
 

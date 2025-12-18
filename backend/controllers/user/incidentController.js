@@ -48,16 +48,7 @@ exports.createIncident = async (req, res) => {
 
     await newIncident.save();
 
-    // const populatedIncident = await Incident.findById(type_id)
-    //   .populate('reporter_id', 'fullName email')
-    //   .populate('type_id', 'name');
-
-    // if (!populatedIncident) {
-    //   return res.status(500).json({
-    //     success: false,
-    //     message: 'Failed to retrieve created incident',
-    //   });
-    // }
+   
 
     console.log("HIHI")
     // ✅ Emit event to notify admins (with error handling)
