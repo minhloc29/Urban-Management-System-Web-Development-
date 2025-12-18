@@ -42,7 +42,6 @@ export default function EngineersPage() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
   const [showAddForm, setShowAddForm] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedEngineer, setSelectedEngineer] = useState(null);
@@ -86,37 +85,17 @@ export default function EngineersPage() {
 
   const fetchEngineers = async () => {
     setLoading(true);
-    setError(null);
-
     try {
-      const params = {
-        page,
-        limit,
-        search: search || "",
-      };
-
+      const params = { page, limit, search: search || "" };
       const response = await apiGet("/api/admin/engineer", params);
-      
       if (response.success) {
         setEngineers(response.data || []);
         setTotalPages(response.totalPages || 1);
       } else {
-        setError(response.message || "Failed to fetch engineers");
+        setError(response.message);
       }
-    } catch (err) {
-      setError("Unable to connect to the server.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEngineers();
-  }, [page, search]);
-
-  
-  const handlePageChange = (_, value) => {
-    setPage(value);
+    } catch (err) { setError("Lỗi kết nối server."); } 
+    finally { setLoading(false); }
   };
   
   const MobileEngineerCard = ({ eng }) => (
@@ -136,70 +115,53 @@ export default function EngineersPage() {
     </Card>
   );
 
-  if (loading) {
-    return (
-      <Box sx={{ textAlign: "center", p: 5 }}>
-        <CircularProgress />
+  useEffect(() => { fetchEngineers(); }, [page, search]);
+  const handlePageChange = (_, value) => setPage(value);
+
+  // --- MOBILE CARD COMPONENT ---
+  const MobileEngineerCard = ({ eng }) => (
+    <Card sx={{ mb: 2, p: 2, borderRadius: 3, border: '1px solid #444', bgcolor: '#1e2129' }}>
+      <Box display="flex" alignItems="center" gap={2} mb={2}>
+        <Avatar sx={{ bgcolor: '#1976d2' }}><EngineeringIcon /></Avatar>
+        <Box>
+          <Typography variant="h6" fontWeight="bold" color="#fff">{eng.fullName}</Typography>
+          <Typography variant="body2" color="#aaa">{eng.email}</Typography>
+        </Box>
       </Box>
-    );
-  }
+      <Divider sx={{ borderColor: '#333', mb: 1.5 }} />
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="body2" color="#ccc">Active Tasks:</Typography>
+        <Typography variant="h6" color="#38bdf8" fontWeight="bold">{eng.activeTasks}</Typography>
+      </Box>
+    </Card>
+  );
+
+  if (loading) return <Box sx={{ textAlign: "center", p: 5 }}><CircularProgress /></Box>;
 
   return (
   <>
     {showAddForm ? (
-      <AddEngineer onSuccess={() => {
-        setShowAddForm(false);
-        fetchEngineers(); // refresh list after adding
-      }} />
+      <AddEngineer onSuccess={() => { setShowAddForm(false); fetchEngineers(); }} />
     ) : (
-      <Box sx={{ p: 3, minHeight: '100vh', color: '#e0e0e0' }}>
+      <Box sx={{ p: { xs: 2, md: 3 }, minHeight: '100vh', color: '#e0e0e0' }}>
         
-        {/* Title */}
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-          Engineers
-        </Typography>
-        <Typography variant="subtitle2" sx={{ color: '#bdbdbd', mb: 3 }}>
-          Manage engineers and workloads
-        </Typography>
+        <Box mb={3}>
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: {xs: '1.5rem', md: '2.1rem'} }}>Engineers</Typography>
+            <Typography variant="subtitle2" sx={{ color: '#bdbdbd' }}>Manage engineers and workloads</Typography>
+        </Box>
 
-        {/* Search + Add Button */}
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} sm={8} md={4}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                backgroundColor: '#23272f',
-                borderRadius: 2,
-                px: 2,
-                py: 1,
-                border: '1px solid #444'
-              }}
-            >
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={12} md={4}>
+            <Box sx={{ display: "flex", alignItems: "center", bgcolor: '#23272f', borderRadius: 2, px: 2, py: 1, border: '1px solid #444' }}>
               <SearchIcon sx={{ mr: 1, color: '#bdbdbd' }} />
-              <InputBase
-                placeholder="Search engineer..."
-                fullWidth
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{ color: '#e0e0e0' }}
-              />
+              <InputBase placeholder="Search engineer..." fullWidth value={search} onChange={(e) => setSearch(e.target.value)} sx={{ color: '#e0e0e0' }} />
             </Box>
           </Grid>
-
-          <Grid item xs={12} sm={4} md={2} sx={{ ml: "auto" }}>
-            <Button
-              variant="contained"
-              fullWidth
-              sx={{ height: "42px" }}
-              onClick={() => setShowAddForm(true)}
-            >
-              Add Engineer
-            </Button>
+          <Grid item xs={12} md={2} sx={{ ml: "auto" }}>
+            <Button variant="contained" fullWidth sx={{ height: "42px" }} onClick={() => setShowAddForm(true)}>Add Engineer</Button>
           </Grid>
         </Grid>
 
-        {/* Table */}
         {isMobile ? (
           // MOBILE VIEW
           <Box>{engineers.map((eng, idx) => <MobileEngineerCard key={idx} eng={eng} />)}</Box>
@@ -373,5 +335,4 @@ export default function EngineersPage() {
     )}
   </>
 );
-
 }

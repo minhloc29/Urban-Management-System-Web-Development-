@@ -146,16 +146,27 @@ export default function UserHomePage() {
   </Stack>
 </Box>
 
+      <Box sx={{ mt: 4, position: "relative", zIndex: 1 }}>
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <CircularProgress sx={{ color: "white" }} />
+          </Box>
+        ) : (
+          <RecentReportsCard reports={reports} />
+        )}
+      </Box>
+    </Box>
   );
 }
 
 function FeatureCard({ icon, title, desc, color, href }) {
   return (
-    <Grid item xs={12} md={4}>
+    // RESPONSIVE UPDATE: xs=12 (1 cột trên mobile), sm=6 (2 cột tablet), md=4 (3 cột desktop)
+    <Grid item xs={12} sm={6} md={4}>
       <Card
         onClick={() => (window.location.href = href)}
         sx={{
-          p: 4,
+          p: 3,
           height: "100%",
           borderRadius: "20px",
           background: "rgba(255,255,255,0.05)",

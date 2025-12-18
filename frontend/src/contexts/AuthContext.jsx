@@ -19,6 +19,15 @@ export function AuthProvider({ children }) {
     delete axios.defaults.headers.common['Authorization'];
   };
 
+  const clearAuthData = () => {
+    setUser(null);
+    setRole(null);
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
+    delete axios.defaults.headers.common['Authorization'];
+  };
+
   useEffect(() => {
     const verifyTokenAndLoadUser = async () => {
       const token = localStorage.getItem('userToken'); 

@@ -1,26 +1,12 @@
 import { useState, useEffect } from "react";
 import {
-  Box,
-  Grid,
-  Card,
-  Typography,
-  InputBase,
-  Select,
-  MenuItem,
-  Pagination,
-  TableContainer,
-  Table,
-  TableRow,
-  TableCell,
-  TableHead,
-  TableBody,
-  useMediaQuery,
-  useTheme,
-  Chip
+  Box, Grid, Card, Typography, InputBase, Select, MenuItem, Pagination,
+  TableContainer, Table, TableRow, TableCell, TableHead, TableBody,
+  useMediaQuery, useTheme, Stack, Divider
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { apiGet, apiPost, apiPatch } from "../../utils/api";
-import AddEngineer from "./addEngineer";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import { apiGet } from "../../utils/api";
 import StatusChip from "../../ui-component/admin/StatusChip";
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from "@mui/material/IconButton";
@@ -35,7 +21,6 @@ export default function ReportsPage() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(1); 
-
   const limit = 10;
 
   const handleDeleteReport = async (reportId) => {
@@ -94,6 +79,18 @@ export default function ReportsPage() {
 
   // Fetch reports when the component mounts or when dependencies change
   useEffect(() => {
+    const fetchReports = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({ page, limit, search, sort });
+        const response = await apiGet("/api/admin/reports", params);
+        if (response.success) {
+          setReports(response.data || []);
+          setTotalPages(response.totalPages || 1);
+        }
+      } catch (err) { console.error(err); } 
+      finally { setLoading(false); }
+    };
     fetchReports();
   }, [page, sort, search]);
 
@@ -132,38 +129,15 @@ export default function ReportsPage() {
   );
 
   return (
-    <Box sx={{ p: 3, minHeight: '100vh', color: '#e0e0e0' }}>
-      {/* Page Title */}
-      <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#e0e0e0' }}>
-        All Reports
-      </Typography>
-      <Typography variant="subtitle2" sx={{ color: '#bdbdbd', mb: 3 }}>
-        Manage all citizen-submitted issues
-      </Typography>
+    <Box sx={{ p: { xs: 2, md: 3 }, minHeight: '100vh', color: '#e0e0e0' }}>
+      <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: '#e0e0e0' }}>All Reports</Typography>
+      <Typography variant="subtitle2" sx={{ color: '#bdbdbd', mb: 3 }}>Manage all citizen-submitted issues</Typography>
 
-      {/* Top Controls */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        {/* Search Bar */}
-        <Grid item xs={12} sm={8} md={4}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: '#23272f',
-              borderRadius: 2,
-              px: 2,
-              py: 1,
-              border: '1px solid #444'
-            }}
-          >
+        <Grid item xs={12} md={4}>
+          <Box sx={{ display: "flex", alignItems: "center", bgcolor: '#23272f', borderRadius: 2, px: 2, py: 1, border: '1px solid #444' }}>
             <SearchIcon sx={{ mr: 1, color: '#bdbdbd' }} />
-            <InputBase
-              placeholder="Search reports..."
-              fullWidth
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              sx={{ color: '#e0e0e0' }}
-            />
+            <InputBase placeholder="Search reports..." fullWidth value={search} onChange={(e) => setSearch(e.target.value)} sx={{ color: '#e0e0e0' }} />
           </Box>
         </Grid>
 

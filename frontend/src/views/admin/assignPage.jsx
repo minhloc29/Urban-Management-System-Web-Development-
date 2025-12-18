@@ -1,36 +1,20 @@
 // src/pages/AssignCustomerPage.jsx
 import React, { useEffect, useMemo, useState, useCallback} from 'react';
 import {
-  Box,
-  Grid,
-  Card,
-  Typography,
-  InputBase,
-  IconButton,
-  MenuItem,
-  Select,
-  Pagination,
-  CircularProgress,
-  Button,
-  Paper,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableContainer
+  Box, Grid, Typography, InputBase, MenuItem, Select, Pagination, CircularProgress,
+  Button, Table, TableHead, TableBody, TableRow, TableCell, TableContainer,
+  useMediaQuery, useTheme, Card, Collapse, Divider, Stack
 } from '@mui/material';
-
 import SearchIcon from '@mui/icons-material/Search';
-import ReportRow from '../../ui-component/admin/ReportRow';
-import debounce from 'lodash.debounce';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { Collapse } from "@mui/material";
 import { apiGet, apiPost } from '../../utils/api';
 import StatusChip from '../../ui-component/admin/StatusChip';
 
 export default function AssignCustomerPage() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [sort, setSort] = useState('newest');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -38,16 +22,12 @@ export default function AssignCustomerPage() {
   const [reports, setReports] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
-
   const [openRow, setOpenRow] = useState(null);
-  const [selectedEngineer, setSelectedEngineer] = useState({});
-
+  const [selectedEngineer, setSelectedEngineer] = useState(""); // Change to string/null
   const [engineers, setEngineers] = useState([]);
-
   const limit = 10;
 
-  const loadReports = useCallback(
-    async ({ q = search, s = statusFilter, p = page, so = sort } = {}) => {
+  const loadReports = useCallback(async ({ q = search, s = statusFilter, p = page, so = sort } = {}) => {
       setLoading(true);
       try {
         const params = new URLSearchParams({
@@ -63,97 +43,68 @@ export default function AssignCustomerPage() {
         if (response.success) {
           setReports(response.data || []);
           setTotalPages(response.totalPages || 1);
-        } else {
-          console.error('Failed to fetch reports:', data.message);
         }
-      } catch (err) {
-        console.error('Error fetching reports:', err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [search, statusFilter, page, sort]
-  );
+      } catch (err) { console.error(err); } 
+      finally { setLoading(false); }
+    }, [search, statusFilter, page, sort]);
 
   const loadAvailableEngineers = useCallback(async () => {
-  try {
-    const response = await apiGet(`/api/admin/engineer/available`);
-    if (response.success) {
-      setEngineers(response.data || []); // Store full engineer objects
-    } else {
-      console.error('Failed to fetch engineers:', response.message);
-    }
-  } catch (err) {
-    console.error('Error fetching engineers:', err);
-  }
-}, []);
-  // debounce search
-  useEffect(() => {
-    loadReports();
-    loadAvailableEngineers(); // Fetch engineers when the component mounts
-  }, [loadReports, loadAvailableEngineers]);
+    try {
+      const response = await apiGet(`/api/admin/engineer/available`);
+      if (response.success) setEngineers(response.data || []);
+    } catch (err) { console.error(err); }
+  }, []);
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-    debounced(e.target.value);
-  };
-
-
+  useEffect(() => { loadReports(); loadAvailableEngineers(); }, [loadReports, loadAvailableEngineers]);
 
   const handleAssigned = async (reportId) => {
+    if (!selectedEngineer) return alert("Please select an engineer");
     try {
-      const response = await apiPost(`/api/admin/assign/assign_engineer`, {
-        incidentId: reportId, // Pass the incident ID
-        engineerId: selectedEngineer, // Pass the selected engineer ID
-      });
-
-      if (response.success) {
-        alert("Engineer assigned successfully!");
-        loadReports(); // Refresh the list of reports after assignment
-      } else {
-        alert(response.message || "Failed to assign engineer.");
-      }
-    } catch (err) {
-      console.error("Error assigning engineer:", err);
-      alert("Failed to assign engineer.");
-    }
+      const response = await apiPost(`/api/admin/assign/assign_engineer`, { incidentId: reportId, engineerId: selectedEngineer });
+      if (response.success) { alert("Assigned successfully!"); loadReports(); setOpenRow(null); setSelectedEngineer(""); } 
+      else { alert(response.message); }
+    } catch (err) { console.error(err); alert("Failed."); }
   };
 
-  return (
-    <Box sx={{ p: 3, minHeight: '100vh', color: '#e0e0e0' }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <div>
-          <Typography variant="h4" sx={{ fontWeight: 600 }}>All Customers</Typography>
-          <Typography variant="subtitle2" sx={{ color: '#bdbdbd' }}>Active Members</Typography>
-        </div>
-
-      </Box>
-
-      {/* Top Controls */}
-      <Grid container spacing={2} sx={{ mb: 2, alignItems: 'center' }}>
-        <Grid item xs={12} sm={6} md={5}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              backgroundColor: '#23272f',
-              borderRadius: 2,
-              px: 2,
-              py: 1,
-              border: '1px solid #444',
-              width: '100%'
-            }}
-          >
-            <SearchIcon sx={{ mr: 1, color: '#bdbdbd' }} />
-            <InputBase
-              placeholder="Search by id, location or citizen"
-              fullWidth
-              value={search}
-              onChange={handleSearchChange}
-              sx={{ color: '#e0e0e0' }}
-            />
+  // --- MOBILE ASSIGN CARD ---
+  const MobileAssignCard = ({ r }) => {
+    const isOpen = openRow === r._id;
+    return (
+      <Card sx={{ mb: 2, p: 2, borderRadius: 3, border: '1px solid #444', bgcolor: '#1e2129' }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" onClick={() => setOpenRow(isOpen ? null : r._id)}>
+          <Box>
+            <Typography variant="subtitle1" color="#fff" fontWeight="bold">{r.type_id.name}</Typography>
+            <Typography variant="caption" color="#aaa">{r.reporter_id.fullName}</Typography>
           </Box>
-        </Grid>
+          <Box display="flex" alignItems="center" gap={1}>
+             <StatusChip status={r.status} />
+             {isOpen ? <ExpandLessIcon sx={{color: '#fff'}}/> : <ExpandMoreIcon sx={{color: '#fff'}}/>}
+          </Box>
+        </Box>
+        
+        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+            <Divider sx={{ borderColor: '#333', my: 2 }} />
+            <Typography variant="body2" color="#ccc" mb={1}><b>Desc:</b> {r.description || "No description"}</Typography>
+            <Typography variant="body2" color="#ccc" mb={2}><b>Address:</b> {r.address}</Typography>
+            
+            <Typography variant="subtitle2" color="#fff" mb={1}>Assign Engineer:</Typography>
+            <Stack direction="row" spacing={1}>
+                <Select size="small" fullWidth value={selectedEngineer} onChange={(e) => setSelectedEngineer(e.target.value)} sx={{ background: "#07090cff", color: "white" }}>
+                    {engineers.map((eng) => <MenuItem value={eng._id} key={eng._id}>{eng.fullName}</MenuItem>)}
+                </Select>
+                <Button variant="contained" onClick={() => handleAssigned(r._id)}>Assign</Button>
+            </Stack>
+        </Collapse>
+      </Card>
+    );
+  }
+
+  return (
+    <Box sx={{ p: { xs: 2, md: 3 }, minHeight: '100vh', color: '#e0e0e0' }}>
+      <Box mb={3}>
+         <Typography variant="h4" sx={{ fontWeight: 600, fontSize: {xs: '1.5rem', md: '2.1rem'} }}>Assignments</Typography>
+         <Typography variant="subtitle2" sx={{ color: '#bdbdbd' }}>Assign incidents to engineers</Typography>
+      </Box>
 
         <Grid item xs={6} sm={3} md={2}>
           <Select
@@ -170,154 +121,71 @@ export default function AssignCustomerPage() {
             <MenuItem value="completed">Completed</MenuItem>
           </Select>
         </Grid>
-
-        <Grid item xs={6} sm={3} md={2}>
-          <Select
-            fullWidth
-            value={sort}
-            onChange={(e) => { setSort(e.target.value); loadReports({ so: e.target.value }); }}
-            sx={{ backgroundColor: '#23272f', borderRadius: 2, height: '42px', color: '#e0e0e0' }}
-            MenuProps={{ PaperProps: { sx: { backgroundColor: '#23272f', color: '#e0e0e0' } } }}
-          >
-            <MenuItem value="newest">Newest</MenuItem>
-            <MenuItem value="oldest">Oldest</MenuItem>
-          </Select>
+        <Grid item xs={6} md={3}>
+            <Select fullWidth value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }} displayEmpty sx={{ bgcolor: '#23272f', color: '#e0e0e0', height: 45 }}>
+                <MenuItem value="">All Status</MenuItem>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="assigned">Assigned</MenuItem>
+            </Select>
         </Grid>
       </Grid>
 
+      {/* DATA VIEW */}
+      {loading ? <Box textAlign="center" p={5}><CircularProgress/></Box> : 
+       isMobile ? (
+         <Box>{reports.map(r => <MobileAssignCard key={r._id} r={r} />)}</Box>
+       ) : (
+         <TableContainer sx={{ maxHeight: 580, border: '1px solid #444', borderRadius: 3 }}>
+           <Table stickyHeader sx={{ '& .MuiTableCell-stickyHeader': { bgcolor: '#0f1720 !important', color: '#bdbdbd !important', fontWeight: 700 } }}>
+             <TableHead>
+               <TableRow>
+                 <TableCell sx={{width: 50}}/>
+                 <TableCell>Category</TableCell>
+                 <TableCell>Citizen</TableCell>
+                 <TableCell>Status</TableCell>
+                 <TableCell>Engineer</TableCell>
+               </TableRow>
+             </TableHead>
+             <TableBody>
+               {reports.map((r) => (
+                 <React.Fragment key={r._id}>
+                   <TableRow hover onClick={() => setOpenRow(openRow === r._id ? null : r._id)} sx={{ cursor: "pointer" }}>
+                     <TableCell>{openRow === r._id ? <ExpandLessIcon /> : <ExpandMoreIcon />}</TableCell>
+                     <TableCell>{r.type_id.name}</TableCell>
+                     <TableCell>{r.reporter_id.fullName}</TableCell>
+                     <TableCell><StatusChip status={r.status} /></TableCell>
+                     <TableCell>{r.assigned_engineer_id ? r.assigned_engineer_id.fullName : "N/A"}</TableCell>
+                   </TableRow>
+                   <TableRow>
+                     <TableCell colSpan={6} sx={{ py: 0, border: 0, bgcolor: "rgba(255,255,255,0.02)" }}>
+                       <Collapse in={openRow === r._id} timeout="auto" unmountOnExit>
+                         <Box sx={{ p: 2 }}>
+                           <Typography sx={{ fontWeight: 600, mb: 1 }}>Details</Typography>
+                           <Box sx={{ ml: 1, mb: 2, color: "#ccc" }}>
+                             <p><b>Title:</b> {r.title}</p>
+                             <p><b>Address:</b> {r.address}</p>
+                           </Box>
+                           <Box sx={{ display: "flex", gap: 2 }}>
+                             <Select size="small" value={selectedEngineer} onChange={(e) => setSelectedEngineer(e.target.value)} sx={{ width: 250, background: "#07090cff", color: "white" }}>
+                               {engineers.map((eng) => <MenuItem value={eng._id} key={eng._id}>{eng.fullName}</MenuItem>)}
+                             </Select>
+                             <Button variant="contained" onClick={() => handleAssigned(r._id)}>Assign</Button>
+                           </Box>
+                         </Box>
+                       </Collapse>
+                     </TableCell>
+                   </TableRow>
+                 </React.Fragment>
+               ))}
+             </TableBody>
+           </Table>
+         </TableContainer>
+       )
+      }
       
-        <TableContainer sx={{ maxHeight: 580 }}>
-  <Table stickyHeader sx={{
-    '& .MuiTableCell-stickyHeader': {
-      backgroundColor: '#0f1720 !important',
-      color: '#bdbdbd !important',
-      fontWeight: 700,
-      position: 'sticky',
-      top: 0,
-      zIndex: 5,
-      backgroundClip: 'padding-box',
-      opacity: 1,
-    }
-  }}>
-
-    <TableHead>
-      <TableRow >
-        <TableCell sx={{ color: '#bdbdbd', minWidth: 120 }}></TableCell>
-        <TableCell sx={{ color: '#bdbdbd', minWidth: 120 }}>Category</TableCell>
-        <TableCell sx={{ color: '#bdbdbd', minWidth: 140 }}>Citizen</TableCell>
-        <TableCell sx={{ color: '#bdbdbd', minWidth: 120 }}>Status</TableCell>
-        <TableCell sx={{ color: '#bdbdbd', minWidth: 140 }}>Engineer</TableCell>
-      </TableRow>
-    </TableHead>
-
-    <TableBody>
-
-      {loading ? (
-        <TableRow>
-          <TableCell colSpan={7} align="center">
-            <CircularProgress />
-          </TableCell>
-        </TableRow>
-      ) : reports.length === 0 ? (
-        <TableRow>
-          <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
-            No reports found
-          </TableCell>
-        </TableRow>
-      ) : (
-       reports.map((r) => (
-  <React.Fragment key={r._id || r.id}>
-
-    {/* Main Row */}
-    <TableRow
-      hover
-      sx={{ cursor: "pointer" }}
-      onClick={() => setOpenRow(openRow === r._id ? null : r._id)}
-    >
-      <TableCell>
-        {openRow === r._id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      </TableCell>
-        <TableCell>{r.type_id.name}</TableCell>
-        
-      <TableCell>{r.reporter_id.fullName}</TableCell>
-      <TableCell><StatusChip status={r.status} /></TableCell>
-      
-      <TableCell>  {r.assigned_engineer_id ? r.assigned_engineer_id.fullName : "N/A"}
-</TableCell>
-    </TableRow>
-
-    {/* Expanded Row */}
-    <TableRow>
-      <TableCell
-        colSpan={8}
-        sx={{ py: 0, border: 0, backgroundColor: "rgba(255,255,255,0.02)" }}
-      >
-        <Collapse in={openRow === r._id} timeout="auto" unmountOnExit>
-          <Box sx={{ p: 2 }}>
-
-            <Typography sx={{ fontWeight: 600, mb: 1 }}>
-              Problem Details
-            </Typography>
-            <Box sx={{ ml: 1, mb: 2, color: "#ccc" }}>
-              <p><b>Title:</b> {r.title}</p>
-              <p><b>Description:</b> {r.description || "No description"}</p>
-              <p><b>Address:</b> {r.address}</p>
-            </Box>
-
-            <Typography sx={{ fontWeight: 600, mb: 1 }}>
-              Assign Engineer
-            </Typography>
-
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Select
-                size="small"
-                value={selectedEngineer}
-                onChange={(e) => setSelectedEngineer(e.target.value)} // Set the engineer ID
-                sx={{ width: 200, background: "#07090cff", color: "white" }}
-              >
-                {engineers.map((eng) => (
-                  <MenuItem value={eng._id} key={eng._id}>
-                    {eng.fullName} {/* Display the full name */}
-                  </MenuItem>
-                ))}
-              </Select>
-
-              <Button
-                variant="contained"
-                size="small"
-                onClick={() => {
-                  console.log("Assign engineer:", selectedEngineer);
-                  handleAssigned(r._id);
-                }}
-              >
-                Assign
-              </Button>
-            </Box>
-
-          </Box>
-        </Collapse>
-      </TableCell>
-    </TableRow>
-
-  </React.Fragment>
-))
-
-      )}
-
-    </TableBody>
-
-  </Table>
-</TableContainer>
-        {/* Pagination */}
-        <Box sx={{ px: 3, py: 2, display: 'flex', justifyContent: 'flex-end' }}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={(e, v) => { setPage(v); loadReports({ p: v }); }}
-            variant="outlined"
-            shape="rounded"
-          />
-        </Box>
+      <Box sx={{ mt: 3, display: "flex", justifyContent: "center" }}>
+        <Pagination count={totalPages} page={page} onChange={(_, v) => { setPage(v); loadReports({ p: v }); }} variant="outlined" shape="rounded" />
+      </Box>
     </Box>
   );
 }

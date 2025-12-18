@@ -552,7 +552,12 @@
   }
 }
 
+/* ============================================================================
+   PHẦN BỔ SUNG RESPONSIVE (DÁN VÀO CUỐI FILE LANDING.SCSS CỦA BẠN)
+   Nguyên tắc: Không đụng vào CSS desktop ở trên.
+   ============================================================================ */
 
+/* 1. Mặc định ẨN các thành phần Mobile trên Desktop */
 .nav__toggle {
   display: none; /* Ẩn nút 3 gạch trên PC */
   background: none;
@@ -613,7 +618,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       text-align: center;
       gap: 20px;
-
+      
       &.open {
         display: flex;
         animation: slideDown 0.3s ease forwards;
@@ -643,7 +648,7 @@
   }
 
   /* --- B. TYPOGRAPHY & SPACING (FIX LỖI CHỒNG CHỮ) --- */
-
+  
   /* Giảm Padding chung cho tất cả Section */
   .hero, .features, .intro, .city-data, .usecases, .team, .reviews, .cta, .footer {
     padding: 60px 20px !important; /* Quan trọng: Giảm lề 2 bên xuống 20px */
@@ -668,7 +673,7 @@
   }
 
   /* --- C. GRID SYSTEMS (1 CỘT) --- */
-
+  
   .features__grid, 
   .team__grid, 
   .reviews__grid {
@@ -688,18 +693,18 @@
     height: auto;
     gap: 40px;
   }
-
+  
   /* Đảm bảo ảnh/chart không bị méo */
   .intro__visual, .city-data__visual, .city-data__chart {
     width: 100%;
     max-width: 100%;
   }
-
+  
   .intro__visual img {
     width: 100%;
     height: auto;
   }
-
+  
   .city-data__chart, .holo-card {
     height: 300px; /* Chiều cao cố định cho chart trên mobile */
   }
