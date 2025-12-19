@@ -2,3 +2,4 @@ fastapi
 dotenv
 uvicorn
 google-genai
+python-multipart
