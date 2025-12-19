@@ -34,12 +34,50 @@ export default function ReportProblem() {
   const [loading, setLoading] = useState(false);  
   const [message, setMessage] = useState(null);   
 
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
   const categories = [
     { label: "Ổ gà", value: "Ổ gà", icon: "🚧" },
     { label: "Rác thải", value: "Rác thải", icon: "🗑️" },
     { label: "Đèn hỏng", value: "Đèn đường hỏng", icon: "💡" },
     { label: "Ngập úng", value: "Rò rỉ nước", icon: "💧" }, 
   ];
+
+  const handleGenerateDescriptionAI = async () => {
+    if (images.length === 0) {
+      setAiError("Vui lòng tải lên ít nhất 1 hình ảnh trước.");
+      return;
+    }
+
+    try {
+      setAiLoading(true);
+      setAiError(null);
+
+      const formData = new FormData();
+
+      images.forEach((img) => {
+        formData.append("images", img);
+      });
+
+      formData.append("title", title);
+      formData.append("category", category);
+
+      const res = await apiPost("/api/ai/enhance-description", formData);
+
+      if (res?.success && res?.data?.data?.description) {
+        setDescription(res.data.data.description);
+      } else {
+        setAiError("Không thể tạo mô tả bằng AI.");
+      }
+
+    } catch (err) {
+      console.error(err);
+      setAiError("AI gặp lỗi khi xử lý hình ảnh.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const handleImageUpload = (e) => {
     if (e.target.files) {
@@ -212,7 +250,21 @@ export default function ReportProblem() {
           ))}
         </Box>
 
-        <Typography sx={{ fontWeight: 600, mb: 1 }}>Mô tả chi tiết</Typography>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+        <Typography sx={{ fontWeight: 600, flexGrow: 1 }}>
+          Mô tả chi tiết
+        </Typography>
+
+        <Button
+          size="small"
+          variant="outlined"
+          disabled={images.length === 0 || aiLoading}
+          onClick={handleGenerateDescriptionAI}
+          sx={{ ml: 2 }}
+        >
+          ✨ Viết bằng AI
+        </Button>
+      </Box>
         <TextField
           fullWidth
           multiline

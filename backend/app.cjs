@@ -30,7 +30,8 @@ app.use('/api/admin/engineer', require('./routes/admin/adminEngineerRoutes'));
 app.use('/api/admin/assign', require('./routes/admin/assignRoutes'));
 
 app.use('/api/engineer', require('./routes/engineer/engineerRoutes'));
-
+//AI
+app.use('/api/ai', require('./routes/ai/descriptionRoute'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

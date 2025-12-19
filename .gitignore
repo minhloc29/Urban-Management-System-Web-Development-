@@ -37,3 +37,7 @@ Landing-page/
 
 # MACOS
 .DS_Store
+
+#PYTHON
+
+*/__pycache__
