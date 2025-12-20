@@ -79,3 +79,7 @@ async def analyze_incident(
 
 
 
+# curl -X POST https://urban-management-system-web-development-ov9d.onrender.com/v1/analyze-incident \
+#   -H "Content-Type: multipart/form-data" \
+#   -H "X-Internal-Token: your_internal_token_here" \
+#   -F "file=@path/to/image.png"

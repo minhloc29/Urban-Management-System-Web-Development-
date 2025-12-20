@@ -27,7 +27,8 @@ exports.enhanceDescriptionAI = async ({
   if (category) formData.append("category", category);
   if (hint) formData.append("hint", hint);
   formData.append("language", language);
-
+  console.log("Check url: ", process.env.AI_SERVICE_URL)
+  console.log("Check internal token: ", process.env.AI_INTERNAL_TOKEN)
   const response = await axios.post(
     `${process.env.AI_SERVICE_URL}/v1/analyze-incident`,
     formData,
