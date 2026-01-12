@@ -6,7 +6,9 @@ import {
   Typography,
   Avatar,
   Stack,
-  CircularProgress
+  CircularProgress,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 import axios from "axios";
 
@@ -16,9 +18,50 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import UserIntroCard from "./card/UserIntroCard";
 import UserProfileCard from "./card/UserProfileCard";
 
+const renderMobileLayout = (userInfo, loading, reports) => (
+  <Stack spacing={4}>
+    {/* Profile Section */}
+    <UserIntroCard username={userInfo.fullName} />
+    <UserProfileCard
+      name={userInfo.fullName}
+      role={userInfo.role}
+      avatarSrc=""
+    />
+
+    {/* Features Stack */}
+    <Stack spacing={2}>
+      <FeatureCard
+        icon={<ReportProblemIcon sx={{ fontSize: 42 }} />}
+        title="Report an Issue"
+        desc="Quickly submit reports with images and location."
+        color="#fca5a5"
+        href="/user/report_problem"
+      />
+      <FeatureCard
+        icon={<ListAltIcon sx={{ fontSize: 42 }} />}
+        title="Track My Reports"
+        desc="Monitor the progress of your submitted issues."
+        color="#93c5fd"
+        href="/user/my_report"
+      />
+      <FeatureCard
+        icon={<AccessTimeIcon sx={{ fontSize: 42 }} />}
+        title="View History"
+        desc="Review your completed incident history."
+        color="#c4b5fd"
+        href="/user/my_report"
+      />
+    </Stack>
+
+    
+  </Stack>
+);
+
 export default function UserHomePage() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [userInfo, setUserInfo] = useState({
     fullName: "Citizen",
@@ -27,18 +70,13 @@ export default function UserHomePage() {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
-
         let displayRole = "Resident";
         if (parsedUser.role) {
-          displayRole =
-            parsedUser.role.charAt(0).toUpperCase() +
-            parsedUser.role.slice(1);
+          displayRole = parsedUser.role.charAt(0).toUpperCase() + parsedUser.role.slice(1);
         }
-
         setUserInfo({
           fullName: parsedUser.fullName || "Citizen",
           role: displayRole
@@ -47,123 +85,85 @@ export default function UserHomePage() {
         console.error("Error parsing user info:", err);
       }
     }
-
+    // Simulate API load
+    setTimeout(() => setLoading(false), 800);
   }, []);
 
   return (
     <Box
-  sx={{
-    position: "relative",
-    p: "40px",
-    minHeight: "100vh",
-    color: "white",
-    overflow: "hidden",
-  }}
->
-  {/* ===== Background Blur ===== */}
-  <Box
-    sx={{
-      position: "absolute",
-      width: 350,
-      height: 350,
-      borderRadius: "50%",
-      background: "rgba(56,189,248,0.15)",
-      filter: "blur(120px)",
-      top: 60,
-      left: -80,
-      zIndex: 0,
-    }}
-  />
+      sx={{
+        position: "relative",
+        p: isMobile ? "20px" : "40px", // Reduced padding on mobile
+        minHeight: "100vh",
+        color: "white",
+        overflow: "hidden",
+        bgcolor: "#0f172a" // Assuming a dark background based on your blur colors
+      }}
+    >
+      {/* ===== Background Blur Effects ===== */}
+      <Box sx={{ position: "absolute", width: 350, height: 350, borderRadius: "50%", background: "rgba(56,189,248,0.15)", filter: "blur(120px)", top: 60, left: -80, zIndex: 0 }} />
+      <Box sx={{ position: "absolute", width: 300, height: 300, borderRadius: "50%", background: "rgba(129,140,248,0.18)", filter: "blur(140px)", bottom: 80, right: -40, zIndex: 0 }} />
 
-  <Box
-    sx={{
-      position: "absolute",
-      width: 300,
-      height: 300,
-      borderRadius: "50%",
-      background: "rgba(129,140,248,0.18)",
-      filter: "blur(140px)",
-      bottom: 80,
-      right: -40,
-      zIndex: 0,
-    }}
-  />
-
-  {/* ===== Page Content ===== */}
-  <Box sx={{ position: "relative", zIndex: 1 }}>
-    <Stack spacing={10}>
-      {/* TOP SECTION */}
-      <Grid
-        container
-        spacing={3}
-        alignItems="center"
-      >
-        <Grid size="grow">
-          <UserIntroCard username={userInfo.fullName} />
-        </Grid>
-
-        <Grid size={4}>
-          <UserProfileCard
-            name={userInfo.fullName}
-            role={userInfo.role}
-            avatarSrc=""
-          />
-        </Grid>
-      </Grid>
-
-      {/* FEATURES SECTION */}
-      <Grid
-        container
-        spacing={3}
-        alignItems="center"
-      >
-        <Grid size={4}>
-          <FeatureCard
-            icon={<ReportProblemIcon sx={{ fontSize: 42 }} />}
-            title="Report an Issue"
-            desc="Quickly submit reports with images and location."
-            color="#fca5a5"
-            href="/user/report_problem"
-          />
-        </Grid>
-
-        <Grid size={4}>
-          <FeatureCard
-            icon={<ListAltIcon sx={{ fontSize: 42 }} />}
-            title="Track My Reports"
-            desc="Monitor the progress of your submitted issues."
-            color="#93c5fd"
-            href="/user/my_report"
-          />
-        </Grid>
-
-        <Grid size="grow">
-          <FeatureCard
-            icon={<AccessTimeIcon sx={{ fontSize: 42 }} />}
-            title="View History"
-            desc="Review your completed incident history."
-            color="#c4b5fd"
-            href="/user/my_report"
-          />
-        </Grid>
-      </Grid>
-
-      {/* RECENT REPORTS */}
-      <Box sx={{ mt: 4 }}>
-        {loading ? (
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <CircularProgress sx={{ color: "white" }} />
-          </Box>
+      {/* ===== Page Content ===== */}
+      <Box sx={{ position: "relative", zIndex: 1 }}>
+        {isMobile ? (
+          renderMobileLayout(userInfo, loading, reports)
         ) : (
-          <RecentReportsCard reports={reports} />
+          /* --- DESKTOP STRUCTURE --- */
+          <Stack spacing={10}>
+            {/* TOP SECTION */}
+            <Grid container spacing={3} alignItems="center">
+              <Grid item size="grow">
+                <UserIntroCard username={userInfo.fullName} />
+              </Grid>
+              <Grid item size={4}>
+                <UserProfileCard
+                  name={userInfo.fullName}
+                  role={userInfo.role}
+                  avatarSrc=""
+                />
+              </Grid>
+            </Grid>
+
+            {/* FEATURES SECTION */}
+            <Grid container spacing={3}>
+              <Grid item size={4}>
+                <FeatureCard
+                  icon={<ReportProblemIcon sx={{ fontSize: 42 }} />}
+                  title="Report an Issue"
+                  desc="Quickly submit reports with images and location."
+                  color="#fca5a5"
+                  href="/user/report_problem"
+                />
+              </Grid>
+              <Grid item size={4}>
+                <FeatureCard
+                  icon={<ListAltIcon sx={{ fontSize: 42 }} />}
+                  title="Track My Reports"
+                  desc="Monitor the progress of your submitted issues."
+                  color="#93c5fd"
+                  href="/user/my_report"
+                />
+              </Grid>
+              <Grid item size="grow">
+                <FeatureCard
+                  icon={<AccessTimeIcon sx={{ fontSize: 42 }} />}
+                  title="View History"
+                  desc="Review your completed incident history."
+                  color="#c4b5fd"
+                  href="/user/my_report"
+                />
+              </Grid>
+            </Grid>
+
+           
+          </Stack>
         )}
       </Box>
-    </Stack>
-  </Box>
-</Box>
-
+    </Box>
   );
 }
+
 
 function FeatureCard({ icon, title, desc, color, href }) {
   return (

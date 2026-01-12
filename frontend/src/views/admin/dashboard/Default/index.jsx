@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-
+import { Grid, useMediaQuery, useTheme } from '@mui/material';
 // material-ui
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 
 // project imports (new cards & charts for Ban Quản Lý)
@@ -19,64 +18,84 @@ import TeamPerformanceChart from './charts/TeamPerformanceChart';
 
 import { gridSpacing } from 'store/constant';
 
-// ==============================|| BAN QUẢN LÝ DASHBOARD PAGE ||============================== //
+const renderMobileLayout = (isLoading) => (
+  <Grid container spacing={2} direction="column">
+    {/* --- Group 1: All Cards First --- */}
+    <Grid item xs={12}><TotalReportsCard isLoading={isLoading} /></Grid>
+    <Grid item xs={12}><InProgressReportsCard isLoading={isLoading} /></Grid>
+    <Grid item xs={12}><ResolvedReportsCard isLoading={isLoading} /></Grid>
+    <Grid item xs={12}><UrgentReportsCard isLoading={isLoading} /></Grid>
+
+    {/* --- Group 2: All Charts Follow --- */}
+    <Grid item xs={12}><ReportsByCategoryChart /></Grid>
+    <Grid item xs={12}><ReportsOverTimeChart /></Grid>
+    <Grid item xs={12}><ReportStatusBarChart /></Grid>
+    <Grid item xs={12}><TeamPerformanceChart /></Grid>
+  </Grid>
+);
 
 export default function Dashboard() {
   const [isLoading, setLoading] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1000); // simulate loading delay
+    setTimeout(() => setLoading(false), 1000);
   }, []);
 
   return (
-    <Grid container spacing={gridSpacing} direction="column">
-      {/* ======== TOP METRIC CARDS ======== */}
-      <Grid container direction="row">
-        <Grid>
-          <Grid item xs={12}>
-            <Grid container spacing={2} justifyContent="space-evenly">
-              <Grid container direction="column">
-                  <Grid item xs={12} sm={6} md={3}>
+    <Box sx={{ width: '100%' }}>
+      {isMobile ? (
+        renderMobileLayout(isLoading)
+      ) : (
+        /* --- DESKTOP STRUCTURE --- */
+        <Grid container spacing={gridSpacing} direction="column">
+          {/* ======== TOP METRIC CARDS & TOP CHARTS ======== */}
+          <Grid item>
+            <Grid container direction="row" spacing={gridSpacing}>
+              {/* Left Column: Metrics Group */}
+              <Grid item>
+                <Grid container spacing={2} direction="column">
+                  <Grid item>
                     <TotalReportsCard isLoading={isLoading} />
                   </Grid>
-
-                  {/* In Progress Reports */}
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item>
                     <InProgressReportsCard isLoading={isLoading} />
                   </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item>
                     <ResolvedReportsCard isLoading={isLoading} />
                   </Grid>
-
-                  {/* Urgent Reports */}
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item>
                     <UrgentReportsCard isLoading={isLoading} />
                   </Grid>
+                </Grid>
+              </Grid>
+
+              {/* Middle: Category Chart */}
+              <Grid item size={3}>
+                <ReportsByCategoryChart />
+              </Grid>
+
+              {/* Right: Over Time Chart */}
+              <Grid item size="grow">
+                <ReportsOverTimeChart />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          {/* ======== BOTTOM CHARTS & ANALYTICS ======== */}
+          <Grid item xs={12}>
+            <Grid container spacing={3} justifyContent="space-evenly">
+              <Grid item size={6}>
+                <ReportStatusBarChart />
+              </Grid>
+              <Grid item size="grow">
+                <TeamPerformanceChart />
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-        <Grid size={3}>
-            <ReportsByCategoryChart />
-          </Grid>
-        <Grid size="grow">
-          <ReportsOverTimeChart />
-        </Grid>
-      </Grid>
-      {/* ======== CHARTS & ANALYTICS ======== */}
-      <Grid item xs={12}>
-        <Grid container spacing={3} justifyContent="space-evenly">
-
-          <Grid size={6}>
-            <ReportStatusBarChart />
-          </Grid>
-
-          <Grid size="grow">
-            <TeamPerformanceChart />
-          </Grid>
-
-        </Grid>
-      </Grid>
-    </Grid>
+      )}
+    </Box>
   );
 }
